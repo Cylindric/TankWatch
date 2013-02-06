@@ -1,0 +1,18 @@
+DROP TABLE IF EXISTS `tests`;
+CREATE TABLE `tests` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `code` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) 
+);
+
+DROP TABLE IF EXISTS `results`;
+CREATE TABLE `results` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `test_id` INT NOT NULL,
+  `time` DATETIME NOT NULL,
+  `value` DOUBLE NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) 
+);
