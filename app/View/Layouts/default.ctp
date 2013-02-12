@@ -9,7 +9,8 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 
-		<!-- Le styles -->
+		<?php echo $this->Html->script('jquery-1.9.1.min'); ?>
+		<?php echo $this->Html->script('bootstrap.min'); ?>
 		<?php echo $this->Html->css('bootstrap'); ?>
 
 		<style>
@@ -18,6 +19,8 @@
 		}
 		</style>
 		<?php echo $this->Html->css('bootstrap-responsive'); ?>
+		<?php echo $this->Html->css('bootstrap-datetimepicker.min'); ?>
+		<?php echo $this->Html->css('tankwatch'); ?>
 
 		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -34,7 +37,7 @@
 		<?php
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
-		echo $this->fetch('script');
+
 		?>
 	</head>
 
@@ -44,16 +47,24 @@
 			<div class="navbar-inner">
 				<div class="container">
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
 					</a>
 					<a class="brand" href="#">TankWatch</a>
 					<div class="nav-collapse collapse">
 						<ul class="nav">
 							<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Home', '/');?></li>
 							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/Tests');?></li>
+							<li class="<?php echo ($controller == 'TestSets' ? 'active' : ''); ?>"><?php echo $this->Html->link('Test Sets', '/TestSets');?></li>
 							<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Results', '/Results');?></li>
+						</ul>
+						<ul class="nav pull-right">
+							<?php if($this->Session->read('Auth')): ?>
+								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Logout', '/Users/logout');?></li>
+							<?php else: ?>
+								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Login', '/Users/login');?></li>
+							<?php endif; ?>
 						</ul>
 					</div>
 				</div>
@@ -63,10 +74,8 @@
 		<div class="container">
 			<?php echo $this->Session->flash(); ?>
 			<?php echo $this->fetch('content'); ?>
-
 		</div>
 
-		<?php echo $this->Html->script('jquery-1.9.1.min'); ?>
-		<?php echo $this->Html->script('bootstrap.min'); ?>
+<?php echo $this->fetch('script'); ?>
 	</body>
 </html>
