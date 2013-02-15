@@ -10,7 +10,7 @@ class AppController extends Controller {
 			'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
 			'authorize' => array('Controller')
 		),
-		'DebugKit.Toolbar'
+		//'DebugKit.Toolbar'
 	);
 
     public $helpers = array(
