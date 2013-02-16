@@ -4,7 +4,7 @@ class UsersController extends AppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-        $this->Auth->allow('register');
+        $this->Auth->allow(array('login', 'register'));
     }
 
     public function index() {
@@ -89,6 +89,7 @@ class UsersController extends AppController {
     }
 
     public function logout() {
+        $this->Session->setFlash(__('Logged out'));
     	$this->redirect($this->Auth->logout());
     }
 
