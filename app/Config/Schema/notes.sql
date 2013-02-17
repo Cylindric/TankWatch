@@ -3,6 +3,7 @@ select * from tests;
 select * from tanks;
 select * from users;
 select * from units;
+select * from species;
 select * from species_transactions;
 select * from test_sets;
 select * from test_sets_tests;
@@ -27,3 +28,4 @@ LEFT JOIN `tanks` tank ON (tx.tank_id = tank.id)
 WHERE tank.user_id = 2
 GROUP BY tank.id, tank.name, species.id, species.name
 HAVING SUM(tx.quantity) > 0;
+

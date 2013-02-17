@@ -1,10 +1,10 @@
 -- Reset data
-TRUNCATE TABLE `results`;
-TRUNCATE TABLE `species`;
-TRUNCATE TABLE `species_transactions`;
-TRUNCATE TABLE `tanks`;
-TRUNCATE TABLE `test_sets_tests`;
-TRUNCATE TABLE `test_sets`;
-TRUNCATE TABLE `tests`;
-DELETE FROM `users` WHERE `username` <> 'admin' AND `id` > 0;
-TRUNCATE TABLE`units`;
+DELETE FROM `results` WHERE `id` > 0;
+DELETE FROM `species` WHERE `id` > 0;
+DELETE FROM `species_transactions` WHERE `id` > 0;
+DELETE FROM `tanks` WHERE `id` > 0;
+DELETE FROM `test_sets_tests` WHERE `id` > 0;
+DELETE FROM `test_sets` WHERE `id` > 0;
+DELETE FROM `tests` WHERE `id` > 0;
+DELETE FROM `users` WHERE `id` > 0;
+DELETE FROM `units` WHERE `id` > 0;

@@ -1,9 +1,7 @@
 DROP TABLE IF EXISTS `results`;
-DROP TABLE IF EXISTS `species`;
-
 DROP TABLE IF EXISTS `species_transactions`;
+DROP TABLE IF EXISTS `species`;
 DROP TABLE IF EXISTS `tanks`;
-
 DROP TABLE IF EXISTS `test_sets_tests`;
 DROP TABLE IF EXISTS `test_sets`;
 DROP TABLE IF EXISTS `tests`;
@@ -53,6 +51,10 @@ CREATE TABLE `tanks` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`user_id` INT NOT NULL,
 	`name` VARCHAR(45) NOT NULL,
+	`width` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The width across the front of the tank, in cm.',
+	`height` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The height of the the tank, in cm.',
+	`depth` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The front-to-back depth of the tank, in cm.',
+	`volume` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The water volume in the tank, in litres.',
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`),
@@ -102,6 +104,7 @@ CREATE TABLE `users` (
     `username` VARCHAR(50),
     `password` VARCHAR(50),
     `role` VARCHAR(20),
+    `is_active` BIT NOT NULL DEFAULT 1,
     `created` DATETIME DEFAULT NULL,
     `modified` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -128,30 +131,3 @@ ALTER TABLE `test_sets`
 	ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ;
 
-
-INSERT INTO `species` (`name`) VALUES
-	('Gold Cobra Guppy'),
-	('Purple Harlequin Rasbora'),
-	('Red Cherry Shrimp'),
-	('Gold Ring Butterfly Sucker'),
-	('Rosy Barb'),
-	('Snakeskin Guppy'),
-	('Bamboo Shrimp')
-;
-
-INSERT INTO `tests` (`name`, `code`, `display_format`) VALUES 
-	('Temperature', 'temp', '%.1d'),
-	('Acidity', 'pH', '%.1f'),
-	('Nitrites', 'NO<sub>2</sub>', '%.1f'),
-	('Nitrates', 'NO<sub>3</sub>', '%.1f'),
-	('Ammonia', 'NH<sub>3</sub>', '%.1f'),
-	('Ammonium', 'NH<sub>4</sub>', '%.1f')
-;
-
-INSERT INTO `units` (`name`, `abbreviation`) VALUES 
-	('Unit', ''),
-	('Degrees Celsius', '°C'),
-	('Degrees Farenheit', '°F'),
-	('Parts per million', 'ppm'),
-	('pH', '')
-;
