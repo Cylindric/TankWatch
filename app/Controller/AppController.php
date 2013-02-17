@@ -23,7 +23,7 @@ class AppController extends Controller {
     	}
 
     	// All users can access the index page by default.
-    	if (isset($user['role']) && $user['role'] === 'user' && $this->action == 'index') {
+    	if (isset($user['role']) && $user['role'] === 'user' && $this->action === 'index') {
     		return true;
     	}
 

@@ -155,7 +155,3 @@ INSERT INTO `units` (`name`, `abbreviation`) VALUES
 	('Parts per million', 'ppm'),
 	('pH', '')
 ;
-
-INSERT INTO `users` (`username`, `password`, `role`) VALUES 
-	('admin', 'admin', 'admin')
-;

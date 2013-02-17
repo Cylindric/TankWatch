@@ -55,7 +55,7 @@
 					<div class="nav-collapse collapse">
 						<ul class="nav">
 							<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Home', '/');?></li>
-						<?php if ($this->Session->read('Auth')): ?>
+						<?php if (AuthComponent::user()): ?>
 							<li class="<?php echo ($controller == 'Tanks' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tanks', '/Tanks');?></li>
 							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/Tests');?></li>
 							<li class="<?php echo ($controller == 'TestSets' ? 'active' : ''); ?>"><?php echo $this->Html->link('Test Sets', '/TestSets');?></li>
@@ -66,7 +66,7 @@
 						<?php endif; ?>
 						</ul>
 						<ul class="nav pull-right">
-							<?php if($this->Session->read('Auth')): ?>
+							<?php if(AuthComponent::user()): ?>
 								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Logout ' . AuthComponent::user('username'), '/Users/logout');?></li>
 							<?php else: ?>
 								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Login', '/Users/login');?></li>

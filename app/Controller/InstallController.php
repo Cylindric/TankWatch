@@ -5,18 +5,29 @@ class InstallController extends AppController {
 	public $uses = array('Result', 'Species', 'SpeciesTransaction', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
 
 	public function isAuthorized($user) {
-		return parent::isAuthorized($user);
+        return true;
+//		return parent::isAuthorized($user);
 	}
 
 	public function index() {
+
+    }
+	
+    public function install() {
+        // Add an admin user
+		$user = $this->User->findByUsername('admin');
+		if (empty($user)) {
+			$user = $this->User->create();
+			$user['User']['username'] = 'admin';
+			$user['User']['password'] = 'admin';
+			$user['User']['role'] = 'admin';
+			$user = $this->User->Save($user);
+		}
+		debugger::dump($user);
 	}
 
 	public function demo() {
-		$this->User->contain();
-		$this->Tank->contain();
-		$this->SpeciesTransaction->contain();
-		
-		// Add a simple user
+        // Add a simple user
 		$user = $this->User->findByUsername('user');
 		if (empty($user)) {
 			$user = $this->User->create();
