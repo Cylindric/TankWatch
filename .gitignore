@@ -3,7 +3,6 @@ app/[Cc]onfig/core.php
 app/[Cc]onfig/database.php
 
 app/tmp/*
-!app/tmp/cache/empty
 !app/tmp/cache/persistent/empty
 !app/tmp/cache/models/empty
 !app/tmp/logs/empty
