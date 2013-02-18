@@ -109,3 +109,9 @@ CakeLog::config('error', array(
 
 CakePlugin::load('DebugKit');
 //CakePlugin::load('TwitterBootstrap');
+
+
+/**
+ * Required version for the database
+ */
+Configure::write('db.version', 1);

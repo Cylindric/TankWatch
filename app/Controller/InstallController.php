@@ -2,12 +2,18 @@
 
 class InstallController extends AppController {
 
-    public $uses = array('Result', 'Species', 'SpeciesTransaction', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
+    public $uses = array('Install', 'Result', 'Species', 'SpeciesTransaction', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
 
     public function beforeFilter() {
         // If there are not users at all yet, then allow access to the install
-        if ($this->User->find('count') === 0) {
-            $this->Auth->allow('install');
+        try {
+            if ($this->User->find('count') === 0) {
+                $this->Auth->allow('install');
+            }
+        } catch (Exception $e) {
+            if (get_class($e) === 'MissingTableException') {
+                $this->Auth->allow('install');
+            }
         }
     }
 
@@ -16,6 +22,16 @@ class InstallController extends AppController {
     }
 
     public function install() {
+        
+        // Update the schema
+        $original_version = $this->Install->getCurrentSchemaVersion();
+        $this->Install->updateSchema();
+        $current_version = $this->Install->getCurrentSchemaVersion();
+
+        if ($original_version === $current_version) {
+            return;          
+        }
+        
         // Add an admin user
         $user = $this->User->findByUsername('admin');
         if (empty($user)) {
