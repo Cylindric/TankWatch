@@ -19,7 +19,7 @@ class AppController extends Controller {
     );
 
     public function beforeFilter() {
-        
+        parent::beforeFilter();
     }
 
     public function isAuthorized($user) {

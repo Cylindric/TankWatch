@@ -22,19 +22,21 @@ class InstallController extends AppController {
     }
 
     public function install() {
-        
+        $messages = array();
+
         // Update the schema
         $original_version = $this->Install->getCurrentSchemaVersion();
-        $this->Install->updateSchema();
+        $this->Install->updateSchema($messages);
         $current_version = $this->Install->getCurrentSchemaVersion();
 
         if ($original_version === $current_version) {
-            return;          
+            $messages[] = sprintf('Nothing upgrade was required. Current version matches target version (%s).', $current_version);
         }
-        
+
         // Add an admin user
         $user = $this->User->findByUsername('admin');
         if (empty($user)) {
+            $messages[] = 'No users found, creating "admin".';
             $user = $this->User->create();
             $user['User']['username'] = 'admin';
             $user['User']['password'] = 'admin';
@@ -44,6 +46,7 @@ class InstallController extends AppController {
 
         // Insert core Units
         if ($this->Unit->find('count') === 0) {
+            $messages[] = 'No units found, creating core units.';
             $this->Unit->saveAll(
                     array(
                         array('name' => 'Unit', 'abbreviation' => ''),
@@ -56,22 +59,26 @@ class InstallController extends AppController {
         }
 
         // Insert core Species
-        if ($this->Species->find('count') === 0) {
-            $this->Species->saveAll(
-                    array(
-                        array('name' => 'Gold Cobra Guppy'),
-                        array('name' => 'Purple Harlequin Rasbora'),
-                        array('name' => 'Red Cherry Shrimp'),
-                        array('name' => 'Gold Ring Butterfly Sucker'),
-                        array('name' => 'Rosy Barb'),
-                        array('name' => 'Snakeskin Guppy'),
-                        array('name' => 'Bamboo Shrimp'),
-                    )
-            );
+        $species = array(
+            array('name' => 'Gold Cobra Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'),
+            array('name' => 'Purple Harlequin Rasbora', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Trigonostigma heteromorpha'),
+            array('name' => 'Red Cherry Shrimp', 'scientific_class' => 'Malacostraca', 'scientific_name' => 'Neocaridina heteropoda'),
+            array('name' => 'Gold Ring Butterfly Sucker', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Balitora lineolata'),
+            array('name' => 'Rosy Barb', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Pethia conchonius'),
+            array('name' => 'Snakeskin Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'),
+            array('name' => 'Bamboo Shrimp', 'scientific_class' => 'Malacostraca', 'scientific_name' => 'Atyopsis'),
+            array('name' => 'Red Tailed Shark', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Epalzeorhynchos bicolor'),
+        );
+        for ($i = 0; $i < count($species); $i++) {
+            $species[$i]['id'] = $this->Species->field('id', array('name' => $species[$i]['name']));
         }
+        $messages[] = sprintf('Updating %s core species', count($species));
+        $this->Species->saveAll($species);
+
 
         // Insert core Tests
         if ($this->Test->find('count') === 0) {
+            $messages[] = 'No tests found, creating core tests.';
             $this->Test->saveAll(
                     array(
                         array('name' => 'Temperature', 'code' => 'temp', 'display_format' => '%.1d'),
@@ -83,9 +90,13 @@ class InstallController extends AppController {
                     )
             );
         }
+
+        $this->set(compact('messages'));
     }
 
     public function demo() {
+        $messages = array();
+        
         // Add a simple user
         $user = $this->User->findByUsername('user');
         if (empty($user)) {
@@ -94,8 +105,8 @@ class InstallController extends AppController {
             $user['User']['password'] = 'user';
             $user['User']['role'] = 'user';
             $user = $this->User->Save($user);
+            $messages[] = 'Added demo user';
         }
-        debugger::dump($user);
 
         // Add a couple of tanks for the demo user
         $lounge_tank = $this->Tank->findByName('Lounge');
@@ -104,8 +115,8 @@ class InstallController extends AppController {
             $lounge_tank['Tank']['user_id'] = $user['User']['id'];
             $lounge_tank['Tank']['name'] = 'Lounge';
             $lounge_tank = $this->Tank->save($lounge_tank);
+            $messages[] = sprintf('Added demo tank %s', $lounge_tank['Tank']['name']);
         }
-        debugger::dump($lounge_tank);
 
         $kitchen_tank = $this->Tank->findByName('Kitchen');
         if (empty($kitchen_tank)) {
@@ -113,8 +124,8 @@ class InstallController extends AppController {
             $kitchen_tank['Tank']['user_id'] = $user['User']['id'];
             $kitchen_tank['Tank']['name'] = 'Kitchen';
             $kitchen_tank = $this->Tank->save($kitchen_tank);
+            $messages[] = sprintf('Added demo tank %s', $kitchen_tank['Tank']['name']);
         }
-        debugger::dump($kitchen_tank);
 
 
         // Add some species to the tanks
@@ -143,9 +154,13 @@ class InstallController extends AppController {
         $links[] = array('tank_id' => $lounge_id, 'species_id' => $redshrimp_id, 'quantity' => -2, 'created' => '2013-01-27', 'note' => 'Found a corpse. No sign of others');
         $links[] = array('tank_id' => $lounge_id, 'species_id' => $rasbora_id, 'quantity' => -1, 'created' => '2013-02-03', 'note' => 'AWOL');
         $links[] = array('tank_id' => $lounge_id, 'species_id' => $barb_id, 'quantity' => -1, 'created' => '2013-02-16', 'note' => 'Found dead. Others look fine');
+        $links[] = array('tank_id' => $lounge_id, 'species_id' => $barb_id, 'quantity' => -4, 'created' => '2013-02-19', 'note' => 'Moved barbs into the kitchen');
+        $links[] = array('tank_id' => $kitchen_id, 'species_id' => $barb_id, 'quantity' => 4, 'created' => '2013-02-19', 'note' => 'Moved barbs into the kitchen');
 
         $this->SpeciesTransaction->saveAll($links);
-        debugger::dump($links);
+        $messages[] = 'Added some species transactions to the tanks';
+
+        $this->set(compact('messages'));
     }
 
 }

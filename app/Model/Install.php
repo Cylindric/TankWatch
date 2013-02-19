@@ -17,9 +17,7 @@ class Install extends AppModel {
         return $v;
     }
 
-    public function updateSchema() {
-        $messages = array();
-
+    public function updateSchema(&$messages) {
         $v_current = $this->getCurrentSchemaVersion();
         $v_required = (int) Configure::read('db.version');
 

@@ -114,4 +114,4 @@ CakePlugin::load('DebugKit');
 /**
  * Required version for the database
  */
-Configure::write('db.version', 1);
+Configure::write('db.version', 2);

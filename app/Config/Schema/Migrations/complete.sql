@@ -1,4 +1,4 @@
-/* Clean installation to version 1 */;
+/* Clean installation to version 2 */;
 
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `species_transactions`;
@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `versions`;
 
 
-/* Creating table Versions and setting version to 1 */;
+/* Creating table Versions and setting version to 2 */;
 CREATE TABLE `versions` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`version` INT NOT NULL DEFAULT 0,
@@ -21,7 +21,7 @@ CREATE TABLE `versions` (
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );
-INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (1, 'Initial installation', NOW(), NOW());
+INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (2, 'Initial installation', NOW(), NOW());
 
 
 /* Creating table Results */;
@@ -47,6 +47,8 @@ CREATE TABLE `results` (
 CREATE TABLE `species` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(45) NOT NULL,
+	`scientific_name` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The full scientific name',
+	`scientific_class` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The full scientific class',
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
