@@ -98,34 +98,27 @@ class InstallController extends AppController {
         $messages = array();
         
         // Add a simple user
-        $user = $this->User->findByUsername('user');
-        if (empty($user)) {
-            $user = $this->User->create();
-            $user['User']['username'] = 'user';
-            $user['User']['password'] = 'user';
-            $user['User']['role'] = 'user';
-            $user = $this->User->Save($user);
-            $messages[] = 'Added demo user';
+        $users = array(
+            array('username' => 'user', 'password' => 'user', 'role' => 'user', 'is_active' => 1),
+        );
+        for ($i = 0; $i < count($users); $i++) {
+            $users[$i]['id'] = $this->Users->field('id', array('username' => $users[$i]['username']));
         }
+        $messages[] = sprintf('Updating demo users', count($tanks));
+        $this->Users->saveAll($users);
 
+        
         // Add a couple of tanks for the demo user
-        $lounge_tank = $this->Tank->findByName('Lounge');
-        if (empty($lounge_tank)) {
-            $lounge_tank = $this->Tank->create();
-            $lounge_tank['Tank']['user_id'] = $user['User']['id'];
-            $lounge_tank['Tank']['name'] = 'Lounge';
-            $lounge_tank = $this->Tank->save($lounge_tank);
-            $messages[] = sprintf('Added demo tank %s', $lounge_tank['Tank']['name']);
+        $tanks = array(
+            array('name' => 'Lounge', 'width' => 60, 'depth' => 30, 'height' => 40),
+            array('name' => 'Kitchen', 'width' => 60, 'depth' => 30, 'height' => 40),
+        );
+        for ($i = 0; $i < count($tanks); $i++) {
+            $tanks[$i]['id'] = $this->Tanks->field('id', array('name' => $tanks[$i]['name'], 'user_id' => $user['User']['id']));
         }
+        $messages[] = sprintf('Updating demo tanks', count($tanks));
+        $this->Tanks->saveAll($tanks);
 
-        $kitchen_tank = $this->Tank->findByName('Kitchen');
-        if (empty($kitchen_tank)) {
-            $kitchen_tank = $this->Tank->create();
-            $kitchen_tank['Tank']['user_id'] = $user['User']['id'];
-            $kitchen_tank['Tank']['name'] = 'Kitchen';
-            $kitchen_tank = $this->Tank->save($kitchen_tank);
-            $messages[] = sprintf('Added demo tank %s', $kitchen_tank['Tank']['name']);
-        }
 
 
         // Add some species to the tanks

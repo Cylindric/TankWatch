@@ -37,6 +37,9 @@ class UsersController extends AppController {
             $this->User->create();
             if ($this->User->save($this->request->data)) {
                 $this->Session->setFlash(__('The user has been saved'));
+                if ($this->Auth->login()) {
+                    return $this->redirect($this->Auth->redirectUrl());
+                }
                 $this->redirect(array('action' => 'index'));
             } else {
                 $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
