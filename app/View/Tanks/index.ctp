@@ -22,3 +22,5 @@
         </tr>
     <?php endforeach; ?>
 </table>
+
+<button class="btn btn-primary" onclick="location.href='<?php echo $this->Html->url('/Tanks/add'); ?>';">Add New</button>

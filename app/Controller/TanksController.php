@@ -34,11 +34,11 @@ class TanksController extends AppController {
         if (!$this->Tank->exists()) {
             throw new NotFoundException(__('Invalid Tank'));
         }
-        
+
         $tank = $this->Tank->findById($id);
         $this->set(compact('tank'));
     }
-    
+
     public function edit($id) {
         if (!$id) {
             throw new NotFoundException(__('Invalid Tank'));
@@ -49,35 +49,31 @@ class TanksController extends AppController {
             throw new NotFoundException(__('Invalid Tank'));
         }
 
-		if ($this->request->is('post') || $this->request->is('put')) {
-			$this->Tank->id = $id;
-			if ($this->Tank->save($this->request->data)) {
-	 			$this->Session->setFlash(__('The Tank has been updated'), 'alert', array('class' => 'alert-success'));
-	 			$this->redirect(array('action' => 'index'));
-	 		} else {
-	 			$this->Session->setFlash(__('Unable to update your Tank'), 'alert', array('class' => 'alert-error'));				
-			}
-		}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->Tank->id = $id;
+            if ($this->Tank->save($this->request->data)) {
+                $this->Session->setFlash(__('The Tank has been updated'), 'alert', array('class' => 'alert-success'));
+                $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Session->setFlash(__('Unable to update your Tank'), 'alert', array('class' => 'alert-error'));
+            }
+        }
 
-	    if (!$this->request->data) {
-	        $this->request->data = $tank;
-	    }
+        if (!$this->request->data) {
+            $this->request->data = $tank;
+        }
     }
-    
+
     public function add() {
-        // if ($this->request->is('post')) {
-        // 	$this->request->data['Result']['user_id'] = $this->Auth->user('id');
-        // 	if ($this->Result->save($this->request->data)) {
-        // 		$this->Session->setFlash(__('The result has been saved'), 'alert', array('class' => 'alert-success'));
-        // 		$this->redirect(array('action' => 'index'));
-        // 	} else {
-        // 		$this->Session->setFlash(__('Unable to add your result'), 'alert', array('class' => 'alert-error'));
-        // 	}
-        // }
-        // $tests = $this->Test->find('list');
-        // $testsets = $this->TestSet->find('list');
-        // $units = $this->Unit->find('list');
-        // $this->set(compact('tests', 'units', 'testsets'));
+        if ($this->request->is('post')) {
+            $this->request->data['Tank']['user_id'] = $this->Auth->user('id');
+            if ($this->Tank->save($this->request->data)) {
+                $this->Session->setFlash(__('The tank has been saved'), 'alert', array('class' => 'alert-success'));
+                $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Session->setFlash(__('Unable to add your tank'), 'alert', array('class' => 'alert-error'));
+            }
+        }
     }
 
     public function delete($id) {
