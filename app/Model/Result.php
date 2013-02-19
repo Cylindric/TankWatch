@@ -9,6 +9,11 @@ class Result extends AppModel {
         'value' => array('numeric' => array('rule' => 'numeric', 'required' => true, 'message' => 'You must enter a numeric value')),
     );
 
+    /**
+     * Ensure that users can only see their own objects
+     * @param array $querydata
+     * @return array
+     */
     public function beforeFind($querydata) {
         if (CakeSession::read('Auth.User.role') !== 'admin') {
             $uid = CakeSession::read("Auth.User.id");
