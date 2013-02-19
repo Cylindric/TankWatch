@@ -2,8 +2,11 @@
 app/[Cc]onfig/core.php
 app/[Cc]onfig/database.php
 
+lib/Cake/Console/Templates/skel/tmp/cache/persistent/*
+
 app/tmp/*
 !app/tmp/cache/persistent/empty
 !app/tmp/cache/models/empty
 !app/tmp/logs/empty
+
 !empty
