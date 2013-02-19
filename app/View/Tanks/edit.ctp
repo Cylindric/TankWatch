@@ -1,54 +1,60 @@
 <h1>Edit Tank</h1>
-<?php echo $this->Form->create('Tank', array('class' => 'form-vertical')); ?>
+<?php
+echo $this->Form->create('Tank', array(
+    'class' => 'form-vertical',
+    'inputDefaults' => array('div' => false))
+);
+?>
 <fieldset>
     <legend><?php echo $this->data['Tank']['name']; ?></legend>
 
     <?php
     echo $this->Form->input('name', array(
-        'label' => 'Name',
         'type' => 'text',
         'class' => 'span2',
-        'helpInline' => 'A name for this tank.',
+        'placeholder' => 'tank name',
     ));
     ?>
 
-    <?php
-    echo $this->Form->input('width', array(
-        'label' => 'Width',
-        'type' => 'text',
-        'class' => 'span1',
-        'append' => 'cm',
-        'helpInline' => 'The width across the front of the tank.',
-    ));
-    ?>
-
-    <?php
-    echo $this->Form->input('depth', array(
-        'label' => 'Depth',
-        'type' => 'text',
-        'class' => 'span1',
-        'append' => 'cm',
-        'helpInline' => 'The front-to-back depth of the tank.',
-    ));
-    ?>
-
-    <?php
-    echo $this->Form->input('height', array(
-        'label' => 'Height',
-        'type' => 'text',
-        'class' => 'span1',
-        'append' => 'cm',
-        'helpInline' => 'The height of the tank.',
-    ));
-    ?>
-
+    <div class="row-fluid">
+        <div class="span1">
+            <?php
+            echo $this->Form->input('width', array(
+                'type' => 'text',
+                'append' => 'cm',
+                'class' => 'span10',
+                'placeholder' => '0.00',
+            ));
+            ?>
+        </div>
+        <div class="span1">
+            <?php
+            echo $this->Form->input('depth', array(
+                'type' => 'text',
+                'append' => 'cm',
+                'class' => 'span10',
+                'placeholder' => '0.00',
+            ));
+            ?>
+        </div>
+        <div class="span1">
+            <?php
+            echo $this->Form->input('height', array(
+                'type' => 'text',
+                'append' => 'cm',
+                'placeholder' => '0.00',
+                'class' => 'span10',
+            ));
+            ?>
+        </div>
+    </div>    
     <?php
     echo $this->Form->input('volume', array(
-        'label' => 'Volume',
+        'label' => 'Water Volume',
         'type' => 'text',
         'class' => 'span1',
         'append' => 'L',
-        'helpBlock' => 'Enter the volume of water in this tank.',
+        'placeholder' => '0.00',
     ));
     ?>
 
@@ -57,6 +63,5 @@
         'class' => 'btn btn-primary',
     ));
     ?>
-
 </fieldset>
 <?php echo $this->Form->end(); ?>

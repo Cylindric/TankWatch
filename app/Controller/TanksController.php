@@ -68,7 +68,7 @@ class TanksController extends AppController {
         if ($this->request->is('post')) {
             $this->request->data['Tank']['user_id'] = $this->Auth->user('id');
             if ($this->Tank->save($this->request->data)) {
-                $this->Session->setFlash(__('The tank has been saved'), 'alert', array('class' => 'alert-success'));
+                $this->Session->setFlash(__('The tank has been added'), 'alert', array('class' => 'alert-success'));
                 $this->redirect(array('action' => 'index'));
             } else {
                 $this->Session->setFlash(__('Unable to add your tank'), 'alert', array('class' => 'alert-error'));
