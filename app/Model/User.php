@@ -7,7 +7,8 @@ class User extends AppModel {
 		'username' => array(
 			'unique' => array(
 				'rule' => 'isUnique',
-				'message' => 'This username is already taken'
+				'message' => 'This username is already taken',
+                'last' => false,
 			),
 			'required' => array(
 				'rule' => array('notEmpty'),
@@ -19,6 +20,23 @@ class User extends AppModel {
 				'rule' => array('notEmpty'),
 				'message' => 'A password is required'
 			)
+		),
+		'email' => array(
+			'required' => array(
+				'rule' => array('notEmpty'),
+				'message' => 'An email address is required',
+                'last' => false,
+			),
+			'unique' => array(
+				'rule' => 'isUnique',
+				'message' => 'This email address is already registered',
+                'last' => false,
+			),
+            'email' => array(
+                'rule' => array('email'),
+                'message' => 'Must be a valid email address',
+                'last' => false,
+            ),
 		),
 		'role' => array(
 			'valid' => array(

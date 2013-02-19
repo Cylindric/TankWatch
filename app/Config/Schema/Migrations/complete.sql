@@ -1,4 +1,4 @@
-/* Clean installation to version 2 */;
+/* Clean installation to version 3 */;
 
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `species_transactions`;
@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `versions`;
 
 
-/* Creating table Versions and setting version to 2 */;
+/* Creating table Versions and setting version to 3 */;
 CREATE TABLE `versions` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`version` INT NOT NULL DEFAULT 0,
@@ -21,7 +21,7 @@ CREATE TABLE `versions` (
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );
-INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (2, 'Initial installation', NOW(), NOW());
+INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (3, 'Initial installation', NOW(), NOW());
 
 
 /* Creating table Results */;
@@ -127,13 +127,16 @@ CREATE TABLE `units` (
 /* Creating table Users */;
 CREATE TABLE `users` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`username` VARCHAR(50),
-	`password` VARCHAR(50),
-	`role` VARCHAR(20),
+	`username` VARCHAR(50) NOT NULL,
+	`password` VARCHAR(50) NOT NULL,
+	`role` VARCHAR(20) NOT NULL,
+    `email` VARCHAR(50) NOT NULL,
 	`is_active` BIT NOT NULL DEFAULT 1,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+    UNIQUE KEY (`username`),
+    UNIQUE KEY (`email`)
 );
 
 

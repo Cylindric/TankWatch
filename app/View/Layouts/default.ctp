@@ -67,9 +67,15 @@
 						</ul>
 						<ul class="nav pull-right">
 							<?php if(AuthComponent::user()): ?>
-								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Logout ' . AuthComponent::user('username'), '/Users/logout');?></li>
+								<li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo AuthComponent::user('username')?><b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><?php echo $this->Html->link('Logout', '/Users/logout');?></li>
+                                    </ul>
+                                </li>
 							<?php else: ?>
-								<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Login', '/Users/login');?></li>
+								<li><?php echo $this->Html->link('Login', '/Users/login');?></li>
+								<li><?php echo $this->Html->link('Register', '/Users/register');?></li>
 							<?php endif; ?>
 						</ul>
 					</div>

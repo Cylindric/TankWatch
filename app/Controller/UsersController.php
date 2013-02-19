@@ -20,29 +20,17 @@ class UsersController extends AppController {
         $this->set('user', $this->User->read(null, $id));
     }
 
-    public function add() {
-        if ($this->request->is('post')) {
-            $this->User->create();
-            if ($this->User->save($this->request->data)) {
-                $this->Session->setFlash(__('The user has been saved'));
-                $this->redirect(array('action' => 'index'));
-            } else {
-                $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
-            }
-        }
-    }
-
     public function register() {
         if ($this->request->is('post')) {
             $this->User->create();
             if ($this->User->save($this->request->data)) {
-                $this->Session->setFlash(__('The user has been saved'));
+                $this->Session->setFlash(__('Registration complete!'));
                 if ($this->Auth->login()) {
                     return $this->redirect($this->Auth->redirectUrl());
                 }
                 $this->redirect(array('action' => 'index'));
             } else {
-                $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
+                $this->Session->setFlash(__('There was a problem with your registration. Please, try again.'));
             }
         }
     }
