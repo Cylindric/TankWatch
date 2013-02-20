@@ -1,5 +1,5 @@
 <?php
 
-class SpeciesTransaction extends AppModel {
+class SpeciesTank extends AppModel {
 	public $belongsTo = array('Species', 'Tank');
 }

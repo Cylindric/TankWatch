@@ -2,7 +2,7 @@
 
 class InstallController extends AppController {
 
-    public $uses = array('Install', 'Result', 'Species', 'SpeciesTransaction', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
+    public $uses = array('Install', 'Result', 'Species', 'SpeciesTank', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
 
     public function beforeFilter() {
         // If there are not users at all yet, then allow access to the install
@@ -41,6 +41,7 @@ class InstallController extends AppController {
             $user['User']['username'] = 'admin';
             $user['User']['password'] = 'admin';
             $user['User']['role'] = 'admin';
+            $user['User']['email'] = 'admin@test.local';
             $user = $this->User->Save($user);
         }
 
@@ -49,15 +50,21 @@ class InstallController extends AppController {
             $messages[] = 'No units found, creating core units.';
             $this->Unit->saveAll(
                     array(
+                        array('name' => 'Text', 'abbreviation' => ''),
                         array('name' => 'Unit', 'abbreviation' => ''),
                         array('name' => 'Degrees Celsius', 'abbreviation' => '°C'),
                         array('name' => 'Degress Farenheit', 'abbreviation' => '°F'),
                         array('name' => 'Parts per million', 'abbreviation' => 'ppm'),
                         array('name' => 'pH', 'abbreviation' => ''),
+                        array('name' => 'Centimetre', 'abbreviation' => 'cm'),
+                        array('name' => 'Litre', 'abbreviation' => 'L'),
                     )
             );
         }
+        $unit_txt = $this->Unit->field('id', array('name' => 'Text'));
+        $unit_cm = $this->Unit->field('id', array('abbreviation' => 'cm'));
 
+        
         // Insert core Species
         $species = array(
             array('name' => 'Gold Cobra Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'),
@@ -70,7 +77,7 @@ class InstallController extends AppController {
             array('name' => 'Red Tailed Shark', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Epalzeorhynchos bicolor'),
         );
         for ($i = 0; $i < count($species); $i++) {
-            $species[$i]['id'] = $this->Species->field('id', array('name' => $species[$i]['name']));
+            $species[$i]['id'] = $this->Users->field('id', array('name' => $species[$i]['name']));
         }
         $messages[] = sprintf('Updating %s core species', count($species));
         $this->Species->saveAll($species);
@@ -96,28 +103,29 @@ class InstallController extends AppController {
 
     public function demo() {
         $messages = array();
-        
+
         // Add a simple user
         $users = array(
-            array('username' => 'user', 'password' => 'user', 'role' => 'user', 'is_active' => 1),
+            array('username' => 'user', 'password' => 'user', 'role' => 'user', 'email' => 'user@test.local', 'is_active' => 1),
         );
         for ($i = 0; $i < count($users); $i++) {
-            $users[$i]['id'] = $this->Users->field('id', array('username' => $users[$i]['username']));
+            $users[$i]['id'] = $this->User->field('id', array('username' => $users[$i]['username']));
         }
-        $messages[] = sprintf('Updating demo users', count($tanks));
-        $this->Users->saveAll($users);
+        $messages[] = sprintf('Updating demo users', count($users));
+        $this->User->saveAll($users);
+        $user = $this->User->field('id', array('username' => 'user'));
 
-        
+
         // Add a couple of tanks for the demo user
         $tanks = array(
-            array('name' => 'Lounge', 'width' => 60, 'depth' => 30, 'height' => 40),
-            array('name' => 'Kitchen', 'width' => 60, 'depth' => 30, 'height' => 40),
+            array('name' => 'Lounge', 'width' => 60, 'depth' => 30, 'height' => 40, 'user_id' => $user),
+            array('name' => 'Kitchen', 'width' => 60, 'depth' => 30, 'height' => 40, 'user_id' => $user),
         );
         for ($i = 0; $i < count($tanks); $i++) {
-            $tanks[$i]['id'] = $this->Tanks->field('id', array('name' => $tanks[$i]['name'], 'user_id' => $user['User']['id']));
+            $tanks[$i]['id'] = $this->Tank->field('id', array('name' => $tanks[$i]['name'], 'user_id' => $user));
         }
         $messages[] = sprintf('Updating demo tanks', count($tanks));
-        $this->Tanks->saveAll($tanks);
+        $this->Tank->saveAll($tanks);
 
 
 
@@ -150,8 +158,8 @@ class InstallController extends AppController {
         $links[] = array('tank_id' => $lounge_id, 'species_id' => $barb_id, 'quantity' => -4, 'created' => '2013-02-19', 'note' => 'Moved barbs into the kitchen');
         $links[] = array('tank_id' => $kitchen_id, 'species_id' => $barb_id, 'quantity' => 4, 'created' => '2013-02-19', 'note' => 'Moved barbs into the kitchen');
 
-        $this->SpeciesTransaction->saveAll($links);
-        $messages[] = 'Added some species transactions to the tanks';
+        $this->SpeciesTank->saveAll($links);
+        $messages[] = 'Added some species to the tanks';
 
         $this->set(compact('messages'));
     }

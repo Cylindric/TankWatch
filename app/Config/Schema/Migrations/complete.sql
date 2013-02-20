@@ -1,7 +1,8 @@
-/* Clean installation to version 3 */;
+/* Clean installation to version 1 */;
 
+DROP TABLE IF EXISTS `properties`;
 DROP TABLE IF EXISTS `results`;
-DROP TABLE IF EXISTS `species_transactions`;
+DROP TABLE IF EXISTS `species_tanks`;
 DROP TABLE IF EXISTS `species`;
 DROP TABLE IF EXISTS `tanks`;
 DROP TABLE IF EXISTS `test_sets_tests`;
@@ -12,7 +13,7 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `versions`;
 
 
-/* Creating table Versions and setting version to 3 */;
+/* Creating table Versions and setting version to 1 */;
 CREATE TABLE `versions` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`version` INT NOT NULL DEFAULT 0,
@@ -21,8 +22,7 @@ CREATE TABLE `versions` (
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );
-INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (3, 'Initial installation', NOW(), NOW());
-
+INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (1, 'Initial installation', NOW(), NOW());
 
 /* Creating table Results */;
 CREATE TABLE `results` (
@@ -42,20 +42,19 @@ CREATE TABLE `results` (
 	INDEX(`test_set_id`)
 );
 
-
 /* Creating table Species */;
 CREATE TABLE `species` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(45) NOT NULL,
-	`scientific_name` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The full scientific name',
-	`scientific_class` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The full scientific class',
+	`scientific_name` VARCHAR(255) NOT NULL DEFAULT '',
+	`scientific_class` VARCHAR(255) NOT NULL DEFAULT '',
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 );
 
-/* Creating table Species Transactions */;
-CREATE TABLE `species_transactions` (
+/* Creating table Species Tanks */;
+CREATE TABLE `species_tanks` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`species_id` INT NOT NULL,
 	`tank_id` INT NOT NULL,
@@ -72,10 +71,10 @@ CREATE TABLE `tanks` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`user_id` INT NOT NULL,
 	`name` VARCHAR(45) NOT NULL,
-	`width` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The width across the front of the tank, in cm.',
-	`height` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The height of the the tank, in cm.',
-	`depth` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The front-to-back depth of the tank, in cm.',
-	`volume` FLOAT NOT NULL DEFAULT 0.0 COMMENT 'The water volume in the tank, in litres.',
+	`width` FLOAT NOT NULL DEFAULT 0.0,
+	`height` FLOAT NOT NULL DEFAULT 0.0,
+	`depth` FLOAT NOT NULL DEFAULT 0.0,
+	`volume` FLOAT NOT NULL DEFAULT 0.0,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`),
@@ -140,6 +139,11 @@ CREATE TABLE `users` (
 );
 
 
+/* Adding foreign key constraints to Properties */;
+ALTER TABLE `properties`
+	ADD FOREIGN KEY (unit_id) REFERENCES unit(id) ON DELETE CASCADE,
+;
+
 /* Adding foreign key constraints to Results */;
 ALTER TABLE `results`
 	ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -148,8 +152,8 @@ ALTER TABLE `results`
 	ADD FOREIGN KEY (test_set_id) REFERENCES test_sets(id) ON DELETE CASCADE
 ;
 
-/* Adding foreign key constraints to Species Transactions */;
-ALTER TABLE `species_transactions`
+/* Adding foreign key constraints to Species Tanks */;
+ALTER TABLE `species_tanks`
 	ADD FOREIGN KEY (species_id) REFERENCES species(id) ON DELETE CASCADE,
 	ADD FOREIGN KEY (tank_id) REFERENCES tanks(id) ON DELETE CASCADE
 ;

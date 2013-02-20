@@ -3,7 +3,7 @@
 class Tank extends AppModel {
 
     public $belongsTo = array('User');
-    public $hasMany = array('SpeciesTransactions');
+    public $hasMany = array('SpeciesTank');
 
     /**
      * Ensure that users can only see their own objects

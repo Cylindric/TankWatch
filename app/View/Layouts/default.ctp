@@ -60,6 +60,7 @@
 							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/Tests');?></li>
 							<li class="<?php echo ($controller == 'TestSets' ? 'active' : ''); ?>"><?php echo $this->Html->link('Test Sets', '/TestSets');?></li>
 							<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Results', '/Results');?></li>
+							<li class="<?php echo ($controller == 'Species' ? 'active' : ''); ?>"><?php echo $this->Html->link('Species', '/Species');?></li>
 							<?php if (AuthComponent::user('rank') === 'admin'): ?>
 								<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Admin', '/Results');?></li>
 							<?php endif; ?>
