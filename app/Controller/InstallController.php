@@ -30,7 +30,7 @@ class InstallController extends AppController {
         $current_version = $this->Install->getCurrentSchemaVersion();
 
         if ($original_version === $current_version) {
-            $messages[] = sprintf('Nothing upgrade was required. Current version matches target version (%s).', $current_version);
+            $messages[] = sprintf('No upgrade was required. Current version matches target version (%s).', $current_version);
         }
 
         // Add an admin user
@@ -41,7 +41,7 @@ class InstallController extends AppController {
             $user['User']['username'] = 'admin';
             $user['User']['password'] = 'admin';
             $user['User']['role'] = 'admin';
-            $user['User']['email'] = 'admin@test.local';
+            $user['User']['email'] = 'admin@admins.com';
             $user = $this->User->Save($user);
         }
 
@@ -77,7 +77,7 @@ class InstallController extends AppController {
             array('name' => 'Red Tailed Shark', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Epalzeorhynchos bicolor'),
         );
         for ($i = 0; $i < count($species); $i++) {
-            $species[$i]['id'] = $this->Users->field('id', array('name' => $species[$i]['name']));
+            $species[$i]['id'] = $this->Species->field('id', array('name' => $species[$i]['name']));
         }
         $messages[] = sprintf('Updating %s core species', count($species));
         $this->Species->saveAll($species);

@@ -114,4 +114,4 @@ CakePlugin::load('TwitterBootstrap');
 /**
  * Required version for the database
  */
-Configure::write('db.version', 3);
+Configure::write('db.version', 1);

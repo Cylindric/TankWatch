@@ -1,6 +1,5 @@
 /* Clean installation to version 1 */;
 
-DROP TABLE IF EXISTS `properties`;
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `species_tanks`;
 DROP TABLE IF EXISTS `species`;
@@ -138,11 +137,6 @@ CREATE TABLE `users` (
     UNIQUE KEY (`email`)
 );
 
-
-/* Adding foreign key constraints to Properties */;
-ALTER TABLE `properties`
-	ADD FOREIGN KEY (unit_id) REFERENCES unit(id) ON DELETE CASCADE,
-;
 
 /* Adding foreign key constraints to Results */;
 ALTER TABLE `results`

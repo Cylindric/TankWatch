@@ -36,14 +36,26 @@ class UsersController extends AppController {
     }
 
     public function edit($id = null) {
+        if (empty($id)) {
+            $id = AuthComponent::user('id');
+        }
         $this->User->id = $id;
+
         if (!$this->User->exists()) {
             throw new NotFoundException(__('Invalid user'));
         }
+
         if ($this->request->is('post') || $this->request->is('put')) {
+            // if the new password and confirm are empty, unset everything so they stay the same as they are currently
+            if (empty($this->request->data['User']['password']) && empty($this->request->data['User']['confirm_password'])) {
+                unset($this->request->data['User']['old_password']);
+                unset($this->request->data['User']['password']);
+                unset($this->request->data['User']['confirm_password']);
+            }
+
             if ($this->User->save($this->request->data)) {
                 $this->Session->setFlash(__('The user has been saved'));
-                $this->redirect(array('action' => 'index'));
+                $this->redirect(array('action' => 'edit'));
             } else {
                 $this->Session->setFlash(__('The user could not be saved. Please, try again.'));
             }
@@ -70,18 +82,18 @@ class UsersController extends AppController {
     }
 
     public function login() {
-    	if ($this->request->is('post')) {
-    		if ($this->Auth->login()) {
-    			$this->redirect($this->Auth->redirect());
-    		} else {
-    			$this->Session->setFlash(__('Invalid username or password, please try again'));
-    		}
-    	}
+        if ($this->request->is('post')) {
+            if ($this->Auth->login()) {
+                $this->redirect($this->Auth->redirect());
+            } else {
+                $this->Session->setFlash(__('Invalid username or password, please try again'));
+            }
+        }
     }
 
     public function logout() {
         $this->Session->setFlash(__('Logged out'));
-    	$this->redirect($this->Auth->logout());
+        $this->redirect($this->Auth->logout());
     }
 
 }

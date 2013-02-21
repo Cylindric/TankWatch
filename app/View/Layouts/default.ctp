@@ -69,9 +69,10 @@
 						<ul class="nav pull-right">
 							<?php if(AuthComponent::user()): ?>
 								<li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo AuthComponent::user('username')?><b class="caret"></b></a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo AuthComponent::user('username'); ?><b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li><?php echo $this->Html->link('Logout', '/Users/logout');?></li>
+                                        <li><?php echo $this->Html->link('Profile', '/Users/edit');?></li>
                                     </ul>
                                 </li>
 							<?php else: ?>

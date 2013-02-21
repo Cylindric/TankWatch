@@ -6,23 +6,29 @@ echo $this->Form->create('User', array(
 );
 ?>
     <fieldset>
-        <legend><?php echo __('Register'); ?></legend>
-        <?php echo $this->Form->input('username', array(
-            'append' => '<i class="icon-user"></i>',
-        )); ?>
-        <?php echo $this->Form->input('email', array(
-            'append' => '<i class="icon-envelope"></i>',
+        <legend><?php echo __('Edit'); ?></legend>
+        <?php echo $this->Form->input('old_password', array(
+            'type' => 'password',
+            'label' => 'Current password',
+            'append' => '<i class="icon-lock"></i>',
+            'required' => false,
+            'placeholder' => 'unchanged',
         )); ?>
         <?php echo $this->Form->input('password', array(
             'type' => 'password',
             'label' => 'New password',
             'append' => '<i class="icon-lock"></i>',
+            'required' => false,
+            'placeholder' => 'unchanged',
         )); ?>
         <?php echo $this->Form->input('confirm_password', array(
             'type' => 'password',
             'label' => 'Repeat password',
             'append' => '<i class="icon-lock"></i>',
-            'required' => true,
+            'placeholder' => 'unchanged',
+        )); ?>
+        <?php echo $this->Form->input('email', array(
+            'append' => '<i class="icon-envelope"></i>',
         )); ?>
     </fieldset>
 <?php echo $this->Form->end(__('Submit')); ?>
