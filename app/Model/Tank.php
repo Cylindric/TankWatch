@@ -12,7 +12,7 @@ class Tank extends AppModel {
      */
     public function beforeFind($querydata) {
         if (CakeSession::read('Auth.User.role') !== 'admin') {
-            $uid = CakeSession::read("Auth.User.id");
+            $uid = CakeSession::read('Auth.User.id');
             $querydata['conditions']['Tank.user_id'] = $uid;
         }
         return $querydata;

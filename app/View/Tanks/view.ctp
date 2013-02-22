@@ -10,13 +10,15 @@
             </tr>
         <?php endforeach; ?>
     </table>
+    <button class="btn btn-primary" onclick="location.href='<?php echo $this->Html->url(array('controller' => 'SpeciesTanks', 'action' => 'add', $tank['Tank']['id'])); ?>';">Add New</button>
 </div>
+
 
 <div class="span6">
     <h2>Inhabitant Log</h2>
     <table class="table table-condensed"> 
         <?php foreach ($tank['SpeciesTank'] as $log): ?>
-        
+
             <tr class="<?php echo ($log['quantity'] < 0) ? 'error' : (($log['quantity'] > 0) ? 'success' : ''); ?>">
                 <td><?php echo $this->Time->format('d/m/Y', $log['created']); ?></td>
                 <td><?php echo $log['Species']['name']; ?></td>
@@ -26,6 +28,3 @@
         <?php endforeach; ?>
     </table>
 </div>
-
-
-<?php //debugger::dump($tank); ?>

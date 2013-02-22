@@ -3,14 +3,12 @@
 class TanksController extends AppController {
 
     public $uses = array('Tank', 'SpeciesTank');
-    
+
     public function isAuthorized($user) {
-        // All users can list their tanks, or add a new Tank
         if (in_array($this->action, array('add', 'index'))) {
             return true;
         }
 
-        // Users can only edit their own Tanks
         if (in_array($this->action, array('delete', 'edit', 'view'))) {
             $id = $this->request->params['pass'][0];
             if ($this->Tank->isOwnedBy($id, $user['id'])) {
@@ -37,15 +35,14 @@ class TanksController extends AppController {
 
         $this->Tank->contain(array('SpeciesTank', 'SpeciesTank.Species'));
         $tank = $this->Tank->findById($id);
-        
+
         $inhabitants = $this->SpeciesTank->find('all', array(
             'contain' => array('Species' => array('fields' => array('id', 'name'))),
             'fields' => array('species_id', 'SUM(quantity) AS quantity'),
             'group' => array('species_id HAVING SUM(quantity) > 0'),
             'order' => array('Species.name'),
-            
-        ));
-        
+                ));
+
         $this->set(compact('tank', 'inhabitants'));
     }
 
