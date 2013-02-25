@@ -4,6 +4,3 @@
 [submodule "app/Plugin/TwitterBootstrap"]
 	path = app/Plugin/TwitterBootstrap
 	url = git://github.com/slywalker/TwitterBootstrap.git
-[submodule "app/Vendor/OAuth"]
-	path = app/Vendor/OAuth
-	url = git@github.com:cakebaker/oauth-consumer.git
