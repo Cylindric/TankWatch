@@ -51,10 +51,9 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</a>
-					<a class="brand" href="#">TankWatch</a>
+					<?php echo $this->Html->link('Home', '/', array('class' => 'brand'));?>
 					<div class="nav-collapse collapse">
 						<ul class="nav">
-							<li class="<?php echo ($controller == 'pages' ? 'active' : ''); ?>"><?php echo $this->Html->link('Home', '/');?></li>
 						<?php if (AuthComponent::user()): ?>
 							<li class="<?php echo ($controller == 'Tanks' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tanks', '/Tanks');?></li>
 							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/Tests');?></li>

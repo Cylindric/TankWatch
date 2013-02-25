@@ -1,10 +1,12 @@
 <?php
 
+require_once(APP . 'Vendor' . DS . 'google-api-php-client' . DS . 'src' . DS . 'Google_Client.php');
+
 class UsersController extends AppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-        $this->Auth->allow(array('login', 'logout', 'register'));
+        $this->Auth->allow(array('login', 'logout', 'register', 'oauth2callback'));
     }
 
     public function index() {
@@ -82,12 +84,37 @@ class UsersController extends AppController {
     }
 
     public function login() {
+
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
                 $this->redirect($this->Auth->redirect());
             } else {
                 $this->Session->setFlash(__('Invalid username or password, please try again'));
             }
+        } else {
+            $client = new Google_Client();
+            $client->setApplicationName('TankWatch');
+            $client->setClientId(Configure::read('OAuth.Google.ClientID'));
+            $client->setClientSecret(Configure::read('OAuth.Google.ClientSecret'));
+            $client->setRedirectUri(Configure::read('OAuth.Google.RedirectUri'));
+            $client->setDeveloperKey(Configure::read('OAuth.Google.DeveloperKey'));
+            $client->setScopes('https://www.googleapis.com/auth/userinfo.email');
+
+            $authUrl = $client->createAuthUrl();
+
+            $this->set(array('GoogleAuthUrl' => $authUrl));
+        }
+    }
+
+    public function oauth2callback() {
+        if ($client->getAccessToken()) {
+            $user = $oauth2->userinfo->get();
+
+            debug($user);
+
+            // The access token may have been updated lazily.
+            $token = $client->getAccessToken();
+            debug($token);
         }
     }
 
