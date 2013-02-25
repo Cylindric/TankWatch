@@ -130,6 +130,8 @@ CREATE TABLE `users` (
 	`role` VARCHAR(20) NOT NULL,
     `email` VARCHAR(50) NOT NULL,
 	`is_active` BIT NOT NULL DEFAULT 1,
+    `oauth_token` VARCHAR(255) DEFAULT NULL,
+    `oauth_expires` DATETIME DEFAULT NULL,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`),

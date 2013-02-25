@@ -20,6 +20,7 @@
 		</style>
 		<?php echo $this->Html->css('bootstrap-responsive'); ?>
 		<?php echo $this->Html->css('bootstrap-datetimepicker.min'); ?>
+		<?php echo $this->Html->css('zocial/zocial'); ?>
 		<?php echo $this->Html->css('tankwatch'); ?>
 
 		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->

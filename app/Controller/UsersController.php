@@ -102,8 +102,8 @@ class UsersController extends AppController {
     public function oauth2callback() {
         $client = $this->getGoogleClient();
 
-        if (isset($_GET['code'])) {
-            $client->authenticate($_GET['code']);
+        if (isset($this->request->query['code'])) {
+            $client->authenticate($this->request->query['code']);
             $this->Session->write('token', $client->getAccessToken());
             $this->redirect('oauth2callback');
             return;
