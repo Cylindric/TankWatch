@@ -107,6 +107,7 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 
+CakePlugin::load('Opauth', array('routes' => true, 'bootstrap' => true));
 CakePlugin::load('DebugKit');
 CakePlugin::load('TwitterBootstrap');
 
