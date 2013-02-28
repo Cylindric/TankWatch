@@ -43,7 +43,7 @@ class User extends AppModel {
     );
 
     public function beforeSave($options = array()) {
-        
+
         if (isset($this->data[$this->alias]['password'])) {
 
             if (isset($this->data[$this->alias]['old_password'])) {
@@ -55,7 +55,7 @@ class User extends AppModel {
                     return false;
                 }
             }
-            
+
             // Make sure both new passwords are the same
             if (isset($this->data[$this->alias]['confirm_password'])) {
                 if ($this->data[$this->alias]['password'] !== $this->data[$this->alias]['confirm_password']) {
@@ -69,8 +69,30 @@ class User extends AppModel {
         if (!isset($this->data[$this->alias]['role'])) {
             $this->data[$this->alias]['role'] = 'user';
         }
-        
+
         return true;
+    }
+
+    public function getAuthenticationCookieData() {
+        if (empty($this->id)) {
+            throw new InvalidArgumentException(__('No user specified'));
+        }
+
+        $this->read();
+        $cookie_data = array('User' => array(
+                'id' => $this->data['User']['id'],
+                'password' => $this->data['User']['password'],
+                ));
+        return $cookie_data;
+    }
+
+    public function findByTokenIdentifier($oauth_provider, $oauth_id) {
+        return $this->find('first', array(
+                    'conditions' => array(
+                        'oauth_provider' => $oauth_provider,
+                        'oauth_id' => $oauth_id,
+                    ),
+                ));
     }
 
 }

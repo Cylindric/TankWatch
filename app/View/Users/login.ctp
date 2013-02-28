@@ -1,6 +1,6 @@
 <div class="users form">
 
-    <?php echo $this->Html->link('Login with Google', $GoogleAuthUrl, array('class' => 'zocial google')); ?>
+    <?php echo $this->Html->link('Login with Google', '/auth/google', array('class' => 'zocial google')); ?>
     <?php echo $this->Session->flash('auth'); ?>
     <?php echo $this->Form->create('User'); ?>
     <fieldset>

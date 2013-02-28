@@ -108,6 +108,11 @@ CakeLog::config('error', array(
 ));
 
 CakePlugin::load('Opauth', array('routes' => true, 'bootstrap' => true));
+Configure::write('Opauth.Strategy.Google', array(
+   'client_id' => Configure::read('OAuth.Google.ClientID'),
+   'client_secret' => Configure::read('OAuth.Google.ClientSecret')
+));
+
 CakePlugin::load('DebugKit');
 CakePlugin::load('TwitterBootstrap');
 
