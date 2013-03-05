@@ -10,9 +10,9 @@
 		<meta name="author" content="">
 
 		<?php echo $this->Html->script('jquery-1.9.1.min'); ?>
-		<?php echo $this->Html->script('bootstrap.min'); ?>
+		<?php echo $this->Html->script('jquery.pnotify.min'); ?>
+		<?php echo $this->Html->script('bootstrap'); ?>
 		<?php echo $this->Html->css('bootstrap'); ?>
-
 		<style>
 		body {
 			padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -21,6 +21,7 @@
 		<?php echo $this->Html->css('bootstrap-responsive'); ?>
 		<?php echo $this->Html->css('bootstrap-datetimepicker.min'); ?>
 		<?php echo $this->Html->css('zocial/zocial'); ?>
+		<?php echo $this->Html->css('jquery.pnotify.default'); ?>
 		<?php echo $this->Html->css('tankwatch'); ?>
 
 		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->

@@ -35,7 +35,7 @@ class User extends AppModel {
         ),
         'role' => array(
             'valid' => array(
-                'rule' => array('inList', array('admin', 'user')),
+                'rule' => array('inList', array('admin', 'user', 'registered')),
                 'message' => 'Please enter a valid role',
                 'allowEmpty' => false
             )
@@ -71,6 +71,16 @@ class User extends AppModel {
         }
 
         return true;
+    }
+
+    /**
+     * Determine wether or not the specified user is owned by the specified user
+     * @param int $model_id The id of the record to check
+     * @param int $user_id The id of the user to verify
+     * @return bool
+     */
+    public function isOwnedBy($model_id, $user_id) {
+        return $this->field('id', array('id' => $model_id, 'id' => $user_id)) == $model_id;
     }
 
     public function getAuthenticationCookieData() {

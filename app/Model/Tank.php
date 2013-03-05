@@ -4,6 +4,14 @@ class Tank extends AppModel {
 
     public $belongsTo = array('User');
     public $hasMany = array('SpeciesTank');
+    public $validate = array(
+        'name' => array(
+            'required' => array(
+                'rule' => array('notEmpty'),
+                'message' => 'A name is required'
+            )
+        ),
+    );
 
     /**
      * Ensure that users can only see their own objects

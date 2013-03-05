@@ -6,7 +6,7 @@ echo $this->Form->create('User', array(
 );
 ?>
     <fieldset>
-        <legend><?php echo __('Edit'); ?></legend>
+        <legend><?php echo __('Edit Your Profile'); ?></legend>
         <?php echo $this->Form->input('old_password', array(
             'type' => 'password',
             'label' => 'Current password',

@@ -1,5 +1,7 @@
 <div class="users form">
-<?php 
+Create an account, or <?php echo $this->Html->link('Login with Google', '/auth/google', array('class' => 'zocial google')); ?>
+
+    <?php 
 echo $this->Form->create('User', array(
     'class' => 'form-vertical',
     'inputDefaults' => array('div' => false))

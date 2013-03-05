@@ -2,7 +2,7 @@
 
 class SpeciesTanksController extends AppController {
 
-    public $uses = array('SpeciesTank', 'Tank');
+    public $uses = array('SpeciesTank', 'Species', 'Tank');
 
     public function isAuthorized($user) {
         if (in_array($this->action, array('index'))) {
@@ -33,10 +33,10 @@ class SpeciesTanksController extends AppController {
 
         if ($this->request->is('post')) {
             if ($this->SpeciesTank->save($this->request->data)) {
-                $this->Session->setFlash(__('The species has been added to the tank'), 'alert', array('class' => 'alert-success'));
+                $this->Session->setFlash(__('The species has been added to the tank'), 'notify', array('class' => 'success'));
                 $this->redirect(array('controller' => 'tanks', 'action' => 'view', $tank_id));
             } else {
-                $this->Session->setFlash(__('Unable to add your species to the tank'), 'alert', array('class' => 'alert-error'));
+                $this->Session->setFlash(__('Unable to add your species to the tank'), 'notify', array('class' => 'error'));
             }
         }
 

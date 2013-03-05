@@ -59,10 +59,10 @@ class TanksController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Tank->id = $id;
             if ($this->Tank->save($this->request->data)) {
-                $this->Session->setFlash(__('The Tank has been updated'), 'alert', array('class' => 'alert-success'));
+                $this->Session->setFlash(__('The Tank has been updated'), 'notify', array('class' => 'success'));
                 $this->redirect(array('action' => 'index'));
             } else {
-                $this->Session->setFlash(__('Unable to update your Tank'), 'alert', array('class' => 'alert-error'));
+                $this->Session->setFlash(__('Unable to update your Tank'), 'notify', array('class' => 'error'));
             }
         }
 
@@ -75,10 +75,10 @@ class TanksController extends AppController {
         if ($this->request->is('post')) {
             $this->request->data['Tank']['user_id'] = $this->Auth->user('id');
             if ($this->Tank->save($this->request->data)) {
-                $this->Session->setFlash(__('The tank has been added'), 'alert', array('class' => 'alert-success'));
+                $this->Session->setFlash(__('The tank has been added'), 'notify', array('class' => 'success'));
                 $this->redirect(array('action' => 'index'));
             } else {
-                $this->Session->setFlash(__('Unable to add your tank'), 'alert', array('class' => 'alert-error'));
+                $this->Session->setFlash(__('Unable to add your tank'), 'notify', array('class' => 'error'));
             }
         }
     }
@@ -89,7 +89,7 @@ class TanksController extends AppController {
         }
 
         if ($this->Tank->delete($id)) {
-            $this->Session->setFlash(__('The tank has been deleted'), 'alert', array('class' => 'alert-success'));
+            $this->Session->setFlash(__('The tank has been deleted'), 'notify', array('class' => 'success'));
             $this->redirect(array('action' => 'index'));
         }
     }
