@@ -7,7 +7,9 @@ class OauthAuthenticate extends BaseAuthenticate {
     
     public function authenticate(CakeRequest $request, CakeResponse $response) {
         $this->User = ClassRegistry::init('User');
-        $user = $this->User->findByTokenIdentifier($request->data['auth']['provider'], $request->data['auth']['uid']);
+        if (array_key_exists('auth', $request->data)) {
+        	$user = $this->User->findByTokenIdentifier($request->data['auth']['provider'], $request->data['auth']['uid']);
+    	}
         if (empty($user)) {
             return false;
         } else {
