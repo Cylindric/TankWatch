@@ -8,7 +8,7 @@
         'label' => 'Name',
         'type' => 'text',
         'placeholder' => 'species name',
-        'helpInline' => 'A name for this species.',
+        'helpInline' => 'The common name for this species.',
     ));
     ?>
 
@@ -31,7 +31,7 @@
     ?>
 
     <?php
-    echo $this->Form->submit('Add', array(
+    echo $this->Form->submit('Save', array(
         'class' => 'btn btn-primary',
     ));
     ?>

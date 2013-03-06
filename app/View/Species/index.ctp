@@ -9,22 +9,6 @@
             <td>
                 <?php echo $species['Species']['scientific_name']; ?>
             </td>
-            <td>
-                <button class="btn btn-mini">
-                    <?php
-                    echo $this->Html->link(
-                            'Edit', array('action' => 'edit', $species['Species']['id']));
-                    ?>
-                </button>
-                <button class="btn btn-mini">
-                    <?php
-                    echo $this->Form->postLink(
-                            'Delete', array('action' => 'delete', $species['Species']['id']), array('confirm' => 'Are you sure?'));
-                    ?>
-                </button>
-            </td>
         </tr>
     <?php endforeach; ?>
 </table>
-
-<button class="btn btn-primary" onclick="location.href='<?php echo $this->Html->url('/Species/add'); ?>';">Add New</button>

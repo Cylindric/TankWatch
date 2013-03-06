@@ -11,6 +11,7 @@
 
 		<?php echo $this->Html->script('jquery-1.9.1.min'); ?>
 		<?php echo $this->Html->script('jquery.pnotify.min'); ?>
+		<?php echo $this->Html->script('javascript'); ?>
 		<?php echo $this->Html->script('bootstrap'); ?>
 		<?php echo $this->Html->css('bootstrap'); ?>
 		<style>
@@ -57,13 +58,13 @@
 					<div class="nav-collapse collapse">
 						<ul class="nav">
 						<?php if (AuthComponent::user()): ?>
-							<li class="<?php echo ($controller == 'Tanks' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tanks', '/Tanks');?></li>
-							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/Tests');?></li>
-							<li class="<?php echo ($controller == 'TestSets' ? 'active' : ''); ?>"><?php echo $this->Html->link('Test Sets', '/TestSets');?></li>
-							<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Results', '/Results');?></li>
-							<li class="<?php echo ($controller == 'Species' ? 'active' : ''); ?>"><?php echo $this->Html->link('Species', '/Species');?></li>
+							<li class="<?php echo ($controller == 'Tanks' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tanks', '/tanks');?></li>
+							<li class="<?php echo ($controller == 'Tests' ? 'active' : ''); ?>"><?php echo $this->Html->link('Tests', '/tests');?></li>
+							<li class="<?php echo ($controller == 'TestSets' ? 'active' : ''); ?>"><?php echo $this->Html->link('Test Sets', '/testSets');?></li>
+							<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Results', '/results');?></li>
+							<li class="<?php echo ($controller == 'Species' ? 'active' : ''); ?>"><?php echo $this->Html->link('Species', '/species');?></li>
 							<?php if (AuthComponent::user('rank') === 'admin'): ?>
-								<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Admin', '/Results');?></li>
+								<li class="<?php echo ($controller == 'Results' ? 'active' : ''); ?>"><?php echo $this->Html->link('Admin', '/results');?></li>
 							<?php endif; ?>
 						<?php endif; ?>
 						</ul>
@@ -72,13 +73,13 @@
 								<li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo AuthComponent::user('username'); ?><b class="caret"></b></a>
                                     <ul class="dropdown-menu">
-                                        <li><?php echo $this->Html->link('Logout', '/Users/logout');?></li>
-                                        <li><?php echo $this->Html->link('Profile', '/Users/edit');?></li>
+                                        <li><?php echo $this->Html->link('Logout', '/users/logout');?></li>
+                                        <li><?php echo $this->Html->link('Profile', '/users/edit');?></li>
                                     </ul>
                                 </li>
 							<?php else: ?>
-								<li><?php echo $this->Html->link('Login', '/Users/login');?></li>
-								<li><?php echo $this->Html->link('Register', '/Users/register');?></li>
+								<li><?php echo $this->Html->link('Login', '/users/login');?></li>
+								<li><?php echo $this->Html->link('Register', '/users/register');?></li>
 							<?php endif; ?>
 						</ul>
 					</div>

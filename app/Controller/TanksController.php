@@ -39,6 +39,7 @@ class TanksController extends AppController {
         $inhabitants = $this->SpeciesTank->find('all', array(
             'contain' => array('Species' => array('fields' => array('id', 'name'))),
             'fields' => array('species_id', 'SUM(quantity) AS quantity'),
+            'conditions' => array('tank_id' => $id),
             'group' => array('species_id HAVING SUM(quantity) > 0'),
             'order' => array('Species.name'),
                 ));

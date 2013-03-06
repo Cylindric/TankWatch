@@ -46,4 +46,20 @@ class SpeciesTanksController extends AppController {
         }
     }
 
+    public function delete($id) {
+        if ($this->request->is('get')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->isAjax()) {
+            if ($this->SpeciesTank->delete($id)) {
+                echo json_encode(array('type' => 'success', 'msg' => 'The species has been removed from the tank'));
+            } else {
+                echo json_encode(array('type' => 'error', 'msg' => 'The was a problem removing that species from the tank'));
+            }
+            $this->autoRender = false;
+            exit;
+        }
+    }
+
 }

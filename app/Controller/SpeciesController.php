@@ -15,24 +15,12 @@ class SpeciesController extends AppController {
         return parent::isAuthorized($user);
     }
 
-    public function index() {
+    public function admin_index() {
         $species = $this->Species->find('all');
         $this->set(compact('species'));
     }
 
-    public function add() {
-        if ($this->request->is('post')) {
-            $this->request->data['Species']['user_id'] = $this->Auth->user('id');
-            if ($this->Species->save($this->request->data)) {
-                $this->Session->setFlash(__('The species has been added'), 'notify', array('class' => 'success'));
-                $this->redirect(array('action' => 'index'));
-            } else {
-                $this->Session->setFlash(__('Unable to add your species'), 'notify', array('class' => 'error'));
-            }
-        }
-    }
-
-    public function edit($id) {
+    public function admin_edit($id) {
         if (!$id) {
             throw new NotFoundException(__('Invalid Species'));
         }
@@ -55,6 +43,28 @@ class SpeciesController extends AppController {
         if (!$this->request->data) {
             $this->request->data = $species;
         }
+    }
+
+    public function admin_add() {
+        if ($this->request->is('post')) {
+            $this->request->data['Species']['user_id'] = $this->Auth->user('id');
+            if ($this->Species->save($this->request->data)) {
+                $this->Session->setFlash(__('The species has been added'), 'notify', array('class' => 'success'));
+                $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Session->setFlash(__('Unable to add your species'), 'notify', array('class' => 'error'));
+            }
+        }
+    }
+
+    public function index() {
+        $species = $this->Species->find('all');
+        $this->set(compact('species'));
+    }
+
+    public function view($id) {
+        $species = $this->Species->findById($id);
+        $this->set(compact('species'));
     }
 
     public function typeahead() {

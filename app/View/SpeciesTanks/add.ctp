@@ -8,17 +8,13 @@ echo $this->Form->create('SpeciesTank', array(
 <fieldset>
     <?php echo $this->Form->input('tank_id', array('type' => 'hidden')); ?>
     <?php
-    echo $this->Form->input('species_id', array(
-        'type' => 'hidden',
-    ));
-    ?>
-    <?php
     echo $this->Form->input('species_name', array(
         'type' => 'text',
         'placeholder' => 'species',
         'data-provide' => 'typeahead',
         'data-minLength' => 2,
         'autocomplete' => 'off',
+        'helpInline' => 'start typing in the name of a species and we\'ll suggest a list of matching ones we already have. If yours isn\'t there, just type it in manually.'
     ));
     ?>
     <?php
@@ -51,10 +47,6 @@ $("#SpeciesTankSpeciesName").typeahead({
 
       process(labels)
     })
-  }
-, updater: function (item) {
-    $('#SpeciesTankSpeciesId').val(mapped[item]);
-    return item;
   }
 })
 <?php echo $this->Html->scriptEnd(); ?>
