@@ -113,7 +113,7 @@ Configure::write('Opauth.Strategy.Google', array(
    'client_secret' => Configure::read('OAuth.Google.ClientSecret')
 ));
 
-CakePlugin::load('DebugKit');
+//CakePlugin::load('DebugKit');
 CakePlugin::load('TwitterBootstrap');
 
 

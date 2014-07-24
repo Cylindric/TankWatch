@@ -2,7 +2,7 @@
 
 class InstallController extends AppController {
 
-    public $uses = array('Install', 'Result', 'Species', 'SpeciesTank', 'Tank', 'Test', 'User', 'Unit', 'TestSet');
+    public $uses = array('Install', 'Property', 'Propertytype', 'Result', 'Species', 'SpeciesProperty', 'SpeciesTank', 'Tank', 'Test', 'TestSet', 'User', 'Unit');
 
     public function beforeFilter() {
         // If there are not users at all yet, then allow access to the install
@@ -80,24 +80,27 @@ class InstallController extends AppController {
             $species[$i]['id'] = $this->Species->field('id', array('name' => $species[$i]['name']));
         }
         $messages[] = sprintf('Updating %s core species', count($species));
-        $this->Species->saveAll($species);
-
-
-        // Insert core Tests
-        if ($this->Test->find('count') === 0) {
-            $messages[] = 'No tests found, creating core tests.';
-            $this->Test->saveAll(
+        $this->Species->saveAll($species);   
+        
+        
+        // Insert core property types
+        if ($this->Propertytype->find('count') === 0) {
+            $messages[] = 'No property types found, creating core types.';
+            $this->Propertytype->saveAll(
                     array(
-                        array('name' => 'Temperature', 'code' => 'temp', 'display_format' => '%.1d'),
-                        array('name' => 'Acidity', 'code' => 'pH', 'display_format' => '%.1f'),
-                        array('name' => 'Nitrites', 'code' => 'NO<sub>2</sub>', 'display_format' => '%.1f'),
-                        array('name' => 'Nitrates', 'code' => 'NO<sub>3</sub>', 'display_format' => '%.1f'),
-                        array('name' => 'Ammonia', 'code' => 'NH<sub>3</sub>', 'display_format' => '%.1f'),
-                        array('name' => 'Ammonium', 'code' => 'NH<sub>4</sub>', 'display_format' => '%.1f'),
+                        array('name' => 'Temperature', 'code' => 'temp', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'Acidity', 'code' => 'pH', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'General Hardness', 'code' => 'GH', 'display_format' => '%d', 'is_test' => true),
+                        array('name' => 'Carbonate Hardness', 'code' => 'KH', 'display_format' => '%d', 'is_test' => true),
+                        array('name' => 'Nitrites', 'code' => 'NO<sub>2</sub>', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'Nitrates', 'code' => 'NO<sub>3</sub>', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'Ammonia', 'code' => 'NH<sub>3</sub>', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'Ammonium', 'code' => 'NH<sub>4</sub>', 'display_format' => '%.1f', 'is_test' => true),
+                        array('name' => 'Length', 'code' => 'Length', 'display_format' => '%.0f', 'is_test' => false)
                     )
             );
         }
-
+        
         $this->set(compact('messages'));
     }
 

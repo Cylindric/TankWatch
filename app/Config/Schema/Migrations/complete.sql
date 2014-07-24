@@ -30,16 +30,13 @@ INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES 
 CREATE TABLE `propertytypes` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(64) NOT NULL,
-	`short_name` VARCHAR(32) NOT NULL,
+	`code` VARCHAR(32) NOT NULL,
+	`display_format` VARCHAR(45) NOT NULL DEFAULT '%f',
+	`is_test` BIT NOT NULL DEFAULT 0,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
-INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Temperature', 'Temp', NOW(), NOW());
-INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('pH', 'pH', NOW(), NOW());
-INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('General Hardness', 'GH', NOW(), NOW());
-INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Carbonate Hardness', 'KH', NOW(), NOW());
-INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Length', 'Length', NOW(), NOW());
 
 /* Creating table Properties */;
 CREATE TABLE `properties` (
@@ -85,6 +82,7 @@ CREATE TABLE `species` (
 CREATE TABLE `species_properties` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`species_id` INT NOT NULL,
+	`propertytype_id` INT NOT NULL,
 	`min_property_id` INT NOT NULL,
 	`max_property_id` INT NOT NULL,
 	`created` DATETIME DEFAULT NULL,
@@ -124,7 +122,7 @@ CREATE TABLE `tanks` (
 /* Creating table Test Set Tests */;
 CREATE TABLE `test_sets_tests` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`test_id` INT NOT NULL,
+	`propertytype_id` INT NOT NULL,
 	`test_set_id` INT NOT NULL,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
@@ -153,11 +151,6 @@ CREATE TABLE `tests` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('pH', 'pH', NOW(), NOW());
-INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('General Hardness', 'GH', NOW(), NOW());
-INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('Carbonate Hardness', 'KH', NOW(), NOW());
-INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('Temperature', 'T', NOW(), NOW());
-
 /* Creating table Units */;
 CREATE TABLE `units` (
 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -170,25 +163,24 @@ CREATE TABLE `units` (
 
 /* Creating table Users */;
 CREATE TABLE `users` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`username` VARCHAR(50) NOT NULL,
-	`name` VARCHAR(50) NOT NULL,
-	`password` VARCHAR(50) NOT NULL,
-	`role` VARCHAR(20) NOT NULL DEFAULT 'user',
-    `email` VARCHAR(50) NOT NULL,
-	`is_active` BIT NOT NULL DEFAULT 1,
-    `oauth_provider` VARCHAR(255) DEFAULT NULL,
-    `oauth_id` VARCHAR(255) DEFAULT NULL,
-    `oauth_token` VARCHAR(128) DEFAULT NULL,
-    `oauth_expires` DATETIME DEFAULT NULL,
-    `oauth_created` DATETIME DEFAULT NULL,
-	`created` DATETIME DEFAULT NULL,
-	`modified` DATETIME DEFAULT NULL,
-	PRIMARY KEY (`id`),
-    UNIQUE KEY (`username`),
-    UNIQUE KEY (`email`)
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `username` VARCHAR(50) NOT NULL,
+        `name` VARCHAR(50) NOT NULL,
+        `password` VARCHAR(50) NOT NULL,
+        `role` VARCHAR(20) NOT NULL DEFAULT 'user',
+        `email` VARCHAR(50) NOT NULL,
+        `is_active` BIT NOT NULL DEFAULT 1,
+        `oauth_provider` VARCHAR(255) DEFAULT NULL,
+        `oauth_id` VARCHAR(255) DEFAULT NULL,
+        `oauth_token` VARCHAR(128) DEFAULT NULL,
+        `oauth_expires` DATETIME DEFAULT NULL,
+        `oauth_created` DATETIME DEFAULT NULL,
+        `created` DATETIME DEFAULT NULL,
+        `modified` DATETIME DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE KEY (`username`),
+        UNIQUE KEY (`email`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
-
 
 /* Adding foreign key constraints to Results */;
 ALTER TABLE `results`
