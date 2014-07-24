@@ -1,6 +1,9 @@
 /* Clean installation to version 1 */;
 
+DROP TABLE IF EXISTS `properties`;
+DROP TABLE IF EXISTS `propertytypes`;
 DROP TABLE IF EXISTS `results`;
+DROP TABLE IF EXISTS `species_properties`;
 DROP TABLE IF EXISTS `species_tanks`;
 DROP TABLE IF EXISTS `species`;
 DROP TABLE IF EXISTS `tanks`;
@@ -22,6 +25,32 @@ CREATE TABLE `versions` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 INSERT INTO `versions` (`version`, `description`, `created`, `modified`) VALUES (1, 'Initial installation', NOW(), NOW());
+
+/* Creating table PropertyTypes */;
+CREATE TABLE `propertytypes` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(64) NOT NULL,
+	`short_name` VARCHAR(32) NOT NULL,
+	`created` DATETIME DEFAULT NULL,
+	`modified` DATETIME DEFAULT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
+INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Temperature', 'Temp', NOW(), NOW());
+INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('pH', 'pH', NOW(), NOW());
+INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('General Hardness', 'GH', NOW(), NOW());
+INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Carbonate Hardness', 'KH', NOW(), NOW());
+INSERT INTO `propertytypes` (`name`, `short_name`, `created`, `modified`) VALUES ('Length', 'Length', NOW(), NOW());
+
+/* Creating table Properties */;
+CREATE TABLE `properties` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`propertytype_id` INT NOT NULL,
+	`value` FLOAT DEFAULT NULL,
+	`source` VARCHAR(255) DEFAULT NULL,
+	`created` DATETIME DEFAULT NULL,
+	`modified` DATETIME DEFAULT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /* Creating table Results */;
 CREATE TABLE `results` (
@@ -50,6 +79,18 @@ CREATE TABLE `species` (
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+/* Creating table Species Properties */;
+CREATE TABLE `species_properties` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`species_id` INT NOT NULL,
+	`min_property_id` INT NOT NULL,
+	`max_property_id` INT NOT NULL,
+	`created` DATETIME DEFAULT NULL,
+	`modified` DATETIME DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	INDEX (`id`, `species_id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /* Creating table Species Tanks */;
@@ -111,6 +152,11 @@ CREATE TABLE `tests` (
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('pH', 'pH', NOW(), NOW());
+INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('General Hardness', 'GH', NOW(), NOW());
+INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('Carbonate Hardness', 'KH', NOW(), NOW());
+INSERT INTO `tests` (`name`, `code`, `created`, `modified`) VALUES ('Temperature', 'T', NOW(), NOW());
 
 /* Creating table Units */;
 CREATE TABLE `units` (
