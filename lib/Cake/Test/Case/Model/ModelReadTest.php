@@ -2,21 +2,22 @@
 /**
  * ModelReadTest file
  *
- * PHP 5
- *
  * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model
  * @since         CakePHP(tm) v 1.2.0.4206
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 require_once dirname(__FILE__) . DS . 'ModelTestBase.php';
+
 /**
  * ModelReadTest
  *
@@ -26,7 +27,7 @@ class ModelReadTest extends BaseModelTest {
 
 /**
  * testExists function
- * @retun void
+ * @return void
  */
 	public function testExists() {
 		$this->loadFixtures('User');
@@ -231,7 +232,7 @@ class ModelReadTest extends BaseModelTest {
 			array('Product' => array('type' => 'Music'), array('price' => 4)),
 			array('Product' => array('type' => 'Toy'), array('price' => 3))
 		);
-		$result = $Product->find('all',array(
+		$result = $Product->find('all', array(
 			'fields' => array('Product.type', 'MIN(Product.price) as price'),
 			'group' => 'Product.type',
 			'order' => 'Product.type ASC'
@@ -2178,10 +2179,10 @@ class ModelReadTest extends BaseModelTest {
 
 		$this->assertEquals($expected, $result);
 
-		$result = $TestModel->unbindModel(array('hasMany' => array('Child')));
+		$result = $TestModel->unbindModel(array('hasMany' => 'Child'));
 		$this->assertTrue($result);
 
-		$result = $TestModel->Sample->unbindModel(array('belongsTo' => array('Apple')));
+		$result = $TestModel->Sample->unbindModel(array('belongsTo' => 'Apple'));
 		$this->assertTrue($result);
 
 		$result = $TestModel->find('all');
@@ -3039,7 +3040,7 @@ class ModelReadTest extends BaseModelTest {
 		$Apple = new Apple();
 		$result = $Apple->find('threaded');
 		$result = Hash::extract($result, '{n}.children');
-		$expected = array(array(), array(), array(), array(), array(), array(),	array());
+		$expected = array(array(), array(), array(), array(), array(), array(), array());
 		$this->assertEquals($expected, $result);
 	}
 
@@ -3054,7 +3055,7 @@ class ModelReadTest extends BaseModelTest {
 		$Model->recursive = -1;
 		$result = $Model->find('threaded');
 		$result = Hash::extract($result, '{n}.children');
-		$expected = array(array(), array(), array(), array(), array(), array(),	array());
+		$expected = array(array(), array(), array(), array(), array(), array(), array());
 		$this->assertEquals($expected, $result);
 
 		$result = $Model->find('threaded', array('parent' => 'mother_id'));
@@ -3762,7 +3763,7 @@ class ModelReadTest extends BaseModelTest {
 /**
  * Test find(neighbors) with missing fields so no neighbors are found.
  *
- * @return
+ * @return void
  */
 	public function testFindNeighborsNoPrev() {
 		$this->loadFixtures('User', 'Article', 'Comment', 'Tag', 'ArticlesTag', 'Attachment');
@@ -3783,6 +3784,7 @@ class ModelReadTest extends BaseModelTest {
 		);
 		$this->assertEquals($expected, $result);
 	}
+
 /**
  * testFindCombinedRelations method
  *
@@ -6298,7 +6300,7 @@ class ModelReadTest extends BaseModelTest {
 		$this->loadFixtures('User');
 		$TestModel = new User();
 		$TestModel->cacheQueries = false;
-
+		$TestModel->order = null;
 		$expected = array(
 			'conditions' => array(
 				'user' => 'larry'
@@ -6844,7 +6846,7 @@ class ModelReadTest extends BaseModelTest {
 			'user' => 'mariano'
 		));
 		$this->assertEquals('mariano', $result);
-
+		$TestModel->order = null;
 		$result = $TestModel->field('COUNT(*) AS count', true);
 		$this->assertEquals(4, $result);
 
@@ -6900,6 +6902,7 @@ class ModelReadTest extends BaseModelTest {
 		$this->assertNotRegExp('/ORDER\s+BY/', $log['log'][0]['query']);
 
 		$Article = new Article();
+		$Article->order = null;
 		$Article->recursive = -1;
 		$expected = count($Article->find('all', array(
 			'fields' => array('Article.user_id'),
@@ -7716,34 +7719,34 @@ class ModelReadTest extends BaseModelTest {
 			$this->assertFalse((bool)$result['Author']['false']);
 		}
 
-		$result = $Post->find('first',array('fields' => array('author_id')));
+		$result = $Post->find('first', array('fields' => array('author_id')));
 		$this->assertFalse(isset($result['Post']['two']));
 		$this->assertFalse(isset($result['Author']['false']));
 
-		$result = $Post->find('first',array('fields' => array('author_id', 'two')));
+		$result = $Post->find('first', array('fields' => array('author_id', 'two')));
 		$this->assertEquals(2, $result['Post']['two']);
 		$this->assertFalse(isset($result['Author']['false']));
 
-		$result = $Post->find('first',array('fields' => array('two')));
+		$result = $Post->find('first', array('fields' => array('two')));
 		$this->assertEquals(2, $result['Post']['two']);
 
 		$Post->id = 1;
 		$result = $Post->field('two');
 		$this->assertEquals(2, $result);
 
-		$result = $Post->find('first',array(
+		$result = $Post->find('first', array(
 			'conditions' => array('two' => 2),
 			'limit' => 1
 		));
 		$this->assertEquals(2, $result['Post']['two']);
 
-		$result = $Post->find('first',array(
+		$result = $Post->find('first', array(
 			'conditions' => array('two <' => 3),
 			'limit' => 1
 		));
 		$this->assertEquals(2, $result['Post']['two']);
 
-		$result = $Post->find('first',array(
+		$result = $Post->find('first', array(
 			'conditions' => array('NOT' => array('two >' => 3)),
 			'limit' => 1
 		));
@@ -7756,6 +7759,7 @@ class ModelReadTest extends BaseModelTest {
 			'limit' => 1
 		));
 		$this->assertEquals(2, $result['Post']['id']);
+		$Post->order = null;
 
 		$Post->virtualFields = array('other_field' => 'Post.id + 1');
 		$result = $Post->find('all', array(
@@ -7764,7 +7768,7 @@ class ModelReadTest extends BaseModelTest {
 		$this->assertEquals(4, $result[0][0]['other_field']);
 
 		ClassRegistry::flush();
-		$Writing = ClassRegistry::init(array('class' => 'Post', 'alias' => 'Writing'), 'Model');
+		$Writing = ClassRegistry::init(array('class' => 'Post', 'alias' => 'Writing'));
 		$Writing->virtualFields = array('two' => "1 + 1");
 		$result = $Writing->find('first');
 		$this->assertEquals(2, $result['Writing']['two']);
@@ -7827,6 +7831,7 @@ class ModelReadTest extends BaseModelTest {
  * Test correct fetching of virtual fields
  * currently is not possible to do Relation.virtualField
  *
+ * @return void
  */
 	public function testVirtualFieldsMysql() {
 		$this->skipIf(!($this->db instanceof Mysql), 'The rest of virtualFields test only compatible with Mysql.');
@@ -7943,6 +7948,27 @@ class ModelReadTest extends BaseModelTest {
 	}
 
 /**
+ * test to assert that != in key together with a single element array will work
+ *
+ * @return void
+ */
+	public function testNotEqualsInArrayWithOneValue() {
+		$this->loadFixtures('Article');
+		$Article = new Article();
+		$Article->recursive = -1;
+
+		$result = $Article->find(
+			'all',
+			array(
+				'conditions' => array(
+					'Article.id !=' => array(1)
+				)
+			)
+		);
+		$this->assertTrue(is_array($result) && !empty($result));
+	}
+
+/**
  * test custom find method
  *
  * @return void
@@ -7962,4 +7988,247 @@ class ModelReadTest extends BaseModelTest {
 		$this->assertEquals(1, count($result));
 	}
 
+/**
+ * test after find callback on related model
+ * 
+ * @return void 
+ */
+	public function testRelatedAfterFindCallback() {
+		$this->loadFixtures('Something', 'SomethingElse', 'JoinThing');
+		$Something = new Something();
+
+		$Something->bindModel(array(
+			'hasMany' => array(
+				'HasMany' => array(
+					'className' => 'JoinThing',
+					'foreignKey' => 'something_id'
+				)
+			),
+			'hasOne' => array(
+				'HasOne' => array(
+					'className' => 'JoinThing',
+					'foreignKey' => 'something_id'
+				)
+			)
+		));
+
+		$results = $Something->find('all');
+
+		$expected = array(
+			array(
+				'Something' => array(
+					'id' => '1',
+					'title' => 'First Post',
+					'body' => 'First Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:39:23',
+					'updated' => '2007-03-18 10:41:31'
+				),
+				'HasOne' => array(
+					'id' => '1',
+					'something_id' => '1',
+					'something_else_id' => '2',
+					'doomed' => true,
+					'created' => '2007-03-18 10:39:23',
+					'updated' => '2007-03-18 10:41:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'HasMany' => array(
+					array(
+						'id' => '1',
+						'something_id' => '1',
+						'something_else_id' => '2',
+						'doomed' => true,
+						'created' => '2007-03-18 10:39:23',
+						'updated' => '2007-03-18 10:41:31',
+						'afterFind' => 'Successfully added by AfterFind'
+					)
+				),
+				'SomethingElse' => array(
+					array(
+						'id' => '2',
+						'title' => 'Second Post',
+						'body' => 'Second Post Body',
+						'published' => 'Y',
+						'created' => '2007-03-18 10:41:23',
+						'updated' => '2007-03-18 10:43:31',
+						'afterFind' => 'Successfully added by AfterFind',
+						'JoinThing' => array(
+							'doomed' => true,
+							'something_id' => '1',
+							'something_else_id' => '2',
+							'afterFind' => 'Successfully added by AfterFind'
+						)
+					)
+				)
+			),
+			array(
+				'Something' => array(
+					'id' => '2',
+					'title' => 'Second Post',
+					'body' => 'Second Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:41:23',
+					'updated' => '2007-03-18 10:43:31'
+				),
+				'HasOne' => array(
+					'id' => '2',
+					'something_id' => '2',
+					'something_else_id' => '3',
+					'doomed' => false,
+					'created' => '2007-03-18 10:41:23',
+					'updated' => '2007-03-18 10:43:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'HasMany' => array(
+					array(
+						'id' => '2',
+						'something_id' => '2',
+						'something_else_id' => '3',
+						'doomed' => false,
+						'created' => '2007-03-18 10:41:23',
+						'updated' => '2007-03-18 10:43:31',
+						'afterFind' => 'Successfully added by AfterFind'
+					)
+				),
+				'SomethingElse' => array(
+					array(
+						'id' => '3',
+						'title' => 'Third Post',
+						'body' => 'Third Post Body',
+						'published' => 'Y',
+						'created' => '2007-03-18 10:43:23',
+						'updated' => '2007-03-18 10:45:31',
+						'afterFind' => 'Successfully added by AfterFind',
+						'JoinThing' => array(
+							'doomed' => false,
+							'something_id' => '2',
+							'something_else_id' => '3',
+							'afterFind' => 'Successfully added by AfterFind'
+						)
+					)
+				)
+			),
+			array(
+				'Something' => array(
+					'id' => '3',
+					'title' => 'Third Post',
+					'body' => 'Third Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:43:23',
+					'updated' => '2007-03-18 10:45:31'
+				),
+				'HasOne' => array(
+					'id' => '3',
+					'something_id' => '3',
+					'something_else_id' => '1',
+					'doomed' => true,
+					'created' => '2007-03-18 10:43:23',
+					'updated' => '2007-03-18 10:45:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'HasMany' => array(
+					array(
+						'id' => '3',
+						'something_id' => '3',
+						'something_else_id' => '1',
+						'doomed' => true,
+						'created' => '2007-03-18 10:43:23',
+						'updated' => '2007-03-18 10:45:31',
+						'afterFind' => 'Successfully added by AfterFind'
+					)
+				),
+				'SomethingElse' => array(
+					array(
+						'id' => '1',
+						'title' => 'First Post',
+						'body' => 'First Post Body',
+						'published' => 'Y',
+						'created' => '2007-03-18 10:39:23',
+						'updated' => '2007-03-18 10:41:31',
+						'afterFind' => 'Successfully added by AfterFind',
+						'JoinThing' => array(
+							'doomed' => true,
+							'something_id' => '3',
+							'something_else_id' => '1',
+							'afterFind' => 'Successfully added by AfterFind'
+						)
+					)
+				)
+			)
+		);
+		$this->assertEquals($expected, $results, 'Model related with has* afterFind callback fails');
+
+		$JoinThing = new JoinThing();
+		$JoinThing->unbindModel(array(
+			'belongsTo' => array(
+				'Something'
+			)
+		));
+		$results = $JoinThing->find('all');
+
+		$expected = array(
+			array(
+				'JoinThing' => array(
+					'id' => '1',
+					'something_id' => '1',
+					'something_else_id' => '2',
+					'doomed' => true,
+					'created' => '2007-03-18 10:39:23',
+					'updated' => '2007-03-18 10:41:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'SomethingElse' => array(
+					'id' => '2',
+					'title' => 'Second Post',
+					'body' => 'Second Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:41:23',
+					'updated' => '2007-03-18 10:43:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				)
+			),
+			array(
+				'JoinThing' => array(
+					'id' => '2',
+					'something_id' => '2',
+					'something_else_id' => '3',
+					'doomed' => false,
+					'created' => '2007-03-18 10:41:23',
+					'updated' => '2007-03-18 10:43:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'SomethingElse' => array(
+					'id' => '3',
+					'title' => 'Third Post',
+					'body' => 'Third Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:43:23',
+					'updated' => '2007-03-18 10:45:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				)
+			),
+			array(
+				'JoinThing' => array(
+					'id' => '3',
+					'something_id' => '3',
+					'something_else_id' => '1',
+					'doomed' => true,
+					'created' => '2007-03-18 10:43:23',
+					'updated' => '2007-03-18 10:45:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				),
+				'SomethingElse' => array(
+					'id' => '1',
+					'title' => 'First Post',
+					'body' => 'First Post Body',
+					'published' => 'Y',
+					'created' => '2007-03-18 10:39:23',
+					'updated' => '2007-03-18 10:41:31',
+					'afterFind' => 'Successfully added by AfterFind'
+				)
+			)
+		);
+		$this->assertEquals($expected, $results, 'Model related with belongsTo afterFind callback fails');
+	}
 }

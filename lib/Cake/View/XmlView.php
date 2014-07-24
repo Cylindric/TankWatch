@@ -1,18 +1,20 @@
 <?php
 /**
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('View', 'View');
 App::uses('Xml', 'Utility');
+App::uses('Hash', 'Utility');
 
 /**
  * A view class that is used for creating XML responses.
@@ -61,7 +63,7 @@ class XmlView extends View {
 /**
  * Constructor
  *
- * @param Controller $controller
+ * @param Controller $controller Controller instance.
  */
 	public function __construct(Controller $controller = null) {
 		parent::__construct($controller);
@@ -69,6 +71,18 @@ class XmlView extends View {
 		if (isset($controller->response) && $controller->response instanceof CakeResponse) {
 			$controller->response->type('xml');
 		}
+	}
+
+/**
+ * Skip loading helpers if this is a _serialize based view.
+ *
+ * @return void
+ */
+	public function loadHelpers() {
+		if (isset($this->viewVars['_serialize'])) {
+			return;
+		}
+		parent::loadHelpers();
 	}
 
 /**
@@ -93,9 +107,9 @@ class XmlView extends View {
 	}
 
 /**
- * Serialize view vars
+ * Serialize view vars.
  *
- * @param array $serialize The viewVars that need to be serialized
+ * @param array $serialize The viewVars that need to be serialized.
  * @return string The serialized data
  */
 	protected function _serialize($serialize) {
@@ -103,16 +117,25 @@ class XmlView extends View {
 
 		if (is_array($serialize)) {
 			$data = array($rootNode => array());
-			foreach ($serialize as $key) {
-				$data[$rootNode][$key] = $this->viewVars[$key];
+			foreach ($serialize as $alias => $key) {
+				if (is_numeric($alias)) {
+					$alias = $key;
+				}
+				$data[$rootNode][$alias] = $this->viewVars[$key];
 			}
 		} else {
 			$data = isset($this->viewVars[$serialize]) ? $this->viewVars[$serialize] : null;
-			if (is_array($data) && Set::numeric(array_keys($data))) {
+			if (is_array($data) && Hash::numeric(array_keys($data))) {
 				$data = array($rootNode => array($serialize => $data));
 			}
 		}
-		return Xml::fromArray($data)->asXML();
+
+		$options = array();
+		if (Configure::read('debug')) {
+			$options['pretty'] = true;
+		}
+
+		return Xml::fromArray($data, $options)->asXML();
 	}
 
 }

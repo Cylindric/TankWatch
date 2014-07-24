@@ -1,21 +1,33 @@
 <?php
 /**
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Utility
  * @since         CakePHP(tm) v 2.2.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 App::uses('Hash', 'Utility');
 
+/**
+ * Class HashTest
+ *
+ * @package       Cake.Utility
+ */
 class HashTest extends CakeTestCase {
 
+/**
+ * Data provider
+ *
+ * @return array
+ */
 	public static function articleData() {
 		return array(
 			array(
@@ -129,6 +141,11 @@ class HashTest extends CakeTestCase {
 		);
 	}
 
+/**
+ * Data provider
+ *
+ * @return array
+ */
 	public static function userData() {
 		return array(
 			array(
@@ -167,7 +184,7 @@ class HashTest extends CakeTestCase {
 /**
  * Test get()
  *
- * return void
+ * @return void
  */
 	public function testGet() {
 		$data = array('abc', 'def');
@@ -197,6 +214,10 @@ class HashTest extends CakeTestCase {
 
 		$result = Hash::get($data, '5.Article.title');
 		$this->assertNull($result);
+
+		$default = array('empty');
+		$this->assertEquals($default, Hash::get($data, '5.Article.title', $default));
+		$this->assertEquals($default, Hash::get(array(), '5.Article.title', $default));
 
 		$result = Hash::get($data, '1.Article.title.not_there');
 		$this->assertNull($result);
@@ -520,7 +541,7 @@ class HashTest extends CakeTestCase {
 			'Validator',
 			'Transactional'
 		);
-		$this->assertEquals(Hash::merge($a, $b), $expected);
+		$this->assertEquals($expected, Hash::merge($a, $b));
 	}
 
 /**
@@ -586,6 +607,12 @@ class HashTest extends CakeTestCase {
 		);
 		$this->assertTrue(Hash::contains($b, $a));
 		$this->assertFalse(Hash::contains($a, $b));
+
+		$a = array(0 => 'test', 'string' => null);
+		$this->assertTrue(Hash::contains($a, array('string' => null)));
+
+		$a = array(0 => 'test', 'string' => null);
+		$this->assertTrue(Hash::contains($a, array('test')));
 	}
 
 /**
@@ -652,6 +679,9 @@ class HashTest extends CakeTestCase {
 
 		$data = array('one', 2 => 'two', 3 => 'three', 4 => 'four', 'a' => 'five');
 		$this->assertFalse(Hash::numeric(array_keys($data)));
+
+		$data = array(2.4, 1, 0, -1, -2);
+		$this->assertTrue(Hash::numeric($data));
 	}
 
 /**
@@ -816,6 +846,68 @@ class HashTest extends CakeTestCase {
 	}
 
 /**
+ * Test extracting based on attributes with boolean values.
+ *
+ * @return void
+ */
+	public function testExtractAttributeBoolean() {
+		$users = array(
+			array(
+				'id' => 2,
+				'username' => 'johndoe',
+				'active' => true
+			),
+			array(
+				'id' => 5,
+				'username' => 'kevin',
+				'active' => true
+			),
+			array(
+				'id' => 9,
+				'username' => 'samantha',
+				'active' => false
+			),
+		);
+		$result = Hash::extract($users, '{n}[active=0]');
+		$this->assertCount(1, $result);
+		$this->assertEquals($users[2], $result[0]);
+
+		$result = Hash::extract($users, '{n}[active=false]');
+		$this->assertCount(1, $result);
+		$this->assertEquals($users[2], $result[0]);
+
+		$result = Hash::extract($users, '{n}[active=1]');
+		$this->assertCount(2, $result);
+		$this->assertEquals($users[0], $result[0]);
+		$this->assertEquals($users[1], $result[1]);
+
+		$result = Hash::extract($users, '{n}[active=true]');
+		$this->assertCount(2, $result);
+		$this->assertEquals($users[0], $result[0]);
+		$this->assertEquals($users[1], $result[1]);
+	}
+
+/**
+ * Test that attribute matchers don't cause errors on scalar data.
+ *
+ * @return void
+ */
+	public function testExtractAttributeEqualityOnScalarValue() {
+		$data = array(
+			'Entity' => array(
+				'id' => 1,
+				'data1' => 'value',
+			)
+		);
+		$result = Hash::extract($data, 'Entity[id=1].data1');
+		$this->assertEquals(array('value'), $result);
+
+		$data = array('Entity' => false );
+		$result = Hash::extract($data, 'Entity[id=1].data1');
+		$this->assertEquals(array(), $result);
+	}
+
+/**
  * Test comparison operators.
  *
  * @return void
@@ -872,10 +964,16 @@ class HashTest extends CakeTestCase {
 		$result = Hash::extract($data, '{n}.Article[title=/^First/]');
 		$expected = array($data[0]['Article']);
 		$this->assertEquals($expected, $result);
+
+		$result = Hash::extract($data, '{n}.Article[title=/^Fir[a-z]+/]');
+		$expected = array($data[0]['Article']);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
  * Test that extract() + matching can hit null things.
+ *
+ * @return void
  */
 	public function testExtractMatchesNull() {
 		$data = array(
@@ -942,7 +1040,7 @@ class HashTest extends CakeTestCase {
  * @return void
  */
 	public function testSort() {
-		$result = Hash::sort(array(), '{n}.name', 'asc');
+		$result = Hash::sort(array(), '{n}.name');
 		$this->assertEquals(array(), $result);
 
 		$a = array(
@@ -965,7 +1063,7 @@ class HashTest extends CakeTestCase {
 				'Friend' => array(array('name' => 'Nate'))
 			)
 		);
-		$a = Hash::sort($a, '{n}.Friend.{n}.name', 'asc');
+		$a = Hash::sort($a, '{n}.Friend.{n}.name');
 		$this->assertEquals($a, $b);
 
 		$b = array(
@@ -1031,7 +1129,7 @@ class HashTest extends CakeTestCase {
 			1 => array('Person' => array('name' => 'Jeff')),
 		);
 		$a = Hash::sort($a, '{n}.Person.name', 'ASC', 'STRING');
-		$this->assertEquals($a, $b);
+		$this->assertSame($a, $b);
 
 		$names = array(
 			array('employees' => array(
@@ -1054,7 +1152,38 @@ class HashTest extends CakeTestCase {
 			array('employees' => array(array('name' => array()))),
 			array('employees' => array(array('name' => array())))
 		);
-		$this->assertEquals($expected, $result);
+		$this->assertSame($expected, $result);
+
+		$a = array(
+			'SU' => array(
+				'total_fulfillable' => 2
+			),
+			'AA' => array(
+				'total_fulfillable' => 1
+			),
+			'LX' => array(
+				'total_fulfillable' => 0
+			),
+			'BL' => array(
+				'total_fulfillable' => 3
+			),
+		);
+		$expected = array(
+			'LX' => array(
+				'total_fulfillable' => 0
+			),
+			'AA' => array(
+				'total_fulfillable' => 1
+			),
+			'SU' => array(
+				'total_fulfillable' => 2
+			),
+			'BL' => array(
+				'total_fulfillable' => 3
+			),
+		);
+		$result = Hash::sort($a, '{s}.total_fulfillable', 'asc');
+		$this->assertSame($expected, $result);
 	}
 
 /**
@@ -1255,6 +1384,23 @@ class HashTest extends CakeTestCase {
 		$result = Hash::insert($data, '{n}.Comment.{n}.insert', 'value');
 		$this->assertEquals('value', $result[0]['Comment'][0]['insert']);
 		$this->assertEquals('value', $result[0]['Comment'][1]['insert']);
+
+		$data = array(
+			0 => array('Item' => array('id' => 1, 'title' => 'first')),
+			1 => array('Item' => array('id' => 2, 'title' => 'second')),
+			2 => array('Item' => array('id' => 3, 'title' => 'third')),
+			3 => array('Item' => array('id' => 4, 'title' => 'fourth')),
+			4 => array('Item' => array('id' => 5, 'title' => 'fifth')),
+		);
+		$result = Hash::insert($data, '{n}.Item[id=/\b2|\b4/]', array('test' => 2));
+		$expected = array(
+			0 => array('Item' => array('id' => 1, 'title' => 'first')),
+			1 => array('Item' => array('id' => 2, 'title' => 'second', 'test' => 2)),
+			2 => array('Item' => array('id' => 3, 'title' => 'third')),
+			3 => array('Item' => array('id' => 4, 'title' => 'fourth', 'test' => 2)),
+			4 => array('Item' => array('id' => 5, 'title' => 'fifth')),
+		);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -1318,6 +1464,23 @@ class HashTest extends CakeTestCase {
 		$result = Hash::remove($a, 'pages.2.vars');
 		$expected = $a;
 		$this->assertEquals($expected, $result);
+
+		$a = array(
+			0 => array(
+				'name' => 'pages'
+			),
+			1 => array(
+				'name' => 'files'
+			)
+		);
+
+		$result = Hash::remove($a, '{n}[name=files]');
+		$expected = array(
+			0 => array(
+				'name' => 'pages'
+			)
+		);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -1337,6 +1500,22 @@ class HashTest extends CakeTestCase {
 		$this->assertFalse(isset($result[0]['Article']['user_id']));
 		$this->assertFalse(isset($result[0]['Article']['title']));
 		$this->assertFalse(isset($result[0]['Article']['body']));
+
+		$data = array(
+			0 => array('Item' => array('id' => 1, 'title' => 'first')),
+			1 => array('Item' => array('id' => 2, 'title' => 'second')),
+			2 => array('Item' => array('id' => 3, 'title' => 'third')),
+			3 => array('Item' => array('id' => 4, 'title' => 'fourth')),
+			4 => array('Item' => array('id' => 5, 'title' => 'fifth')),
+		);
+
+		$result = Hash::remove($data, '{n}.Item[id=/\b2|\b4/]');
+		$expected = array(
+			0 => array('Item' => array('id' => 1, 'title' => 'first')),
+			2 => array('Item' => array('id' => 3, 'title' => 'third')),
+			4 => array('Item' => array('id' => 5, 'title' => 'fifth')),
+		);
+		$this->assertEquals($expected, $result);
 	}
 
 /**
@@ -1400,6 +1579,34 @@ class HashTest extends CakeTestCase {
 			14 => 'Larry E. Masters',
 			25 => 'The Gwoo');
 		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * test combine() giving errors on key/value length mismatches.
+ *
+ * @expectedException CakeException
+ * @return void
+ */
+	public function testCombineErrorMissingValue() {
+		$data = array(
+			array('User' => array('id' => 1, 'name' => 'mark')),
+			array('User' => array('name' => 'jose')),
+		);
+		Hash::combine($data, '{n}.User.id', '{n}.User.name');
+	}
+
+/**
+ * test combine() giving errors on key/value length mismatches.
+ *
+ * @expectedException CakeException
+ * @return void
+ */
+	public function testCombineErrorMissingKey() {
+		$data = array(
+			array('User' => array('id' => 1, 'name' => 'mark')),
+			array('User' => array('id' => 2)),
+		);
+		Hash::combine($data, '{n}.User.id', '{n}.User.name');
 	}
 
 /**
@@ -1598,6 +1805,11 @@ class HashTest extends CakeTestCase {
 		$this->assertEquals($expected, $result);
 	}
 
+/**
+ * testApply
+ *
+ * @return void
+ */
 	public function testApply() {
 		$data = self::articleData();
 
@@ -1620,8 +1832,8 @@ class HashTest extends CakeTestCase {
 /**
  * testing method for map callbacks.
  *
- * @param mixed $value
- * @return mixed.
+ * @param mixed $value Value
+ * @return mixed
  */
 	public function mapCallback($value) {
 		return $value * 2;
@@ -1630,9 +1842,9 @@ class HashTest extends CakeTestCase {
 /**
  * testing method for reduce callbacks.
  *
- * @param mixed $one
- * @param mixed $two
- * @return mixed.
+ * @param mixed $one First param
+ * @param mixed $two Second param
+ * @return mixed
  */
 	public function reduceCallback($one, $two) {
 		return $one + $two;
@@ -2055,6 +2267,25 @@ class HashTest extends CakeTestCase {
 	}
 
 /**
+ * Tests that nest() returns an empty array for invalid input instead of throwing notices.
+ *
+ * @return void
+ */
+	public function testNestInvalid() {
+		$input = array(
+			array(
+				'ParentCategory' => array(
+					'id' => '1',
+					'name' => 'Lorem ipsum dolor sit amet',
+					'parent_id' => '1'
+				)
+			)
+		);
+		$result = Hash::nest($input);
+		$this->assertSame(array(), $result);
+	}
+
+/**
  * testMergeDiff method
  *
  * @return void
@@ -2198,7 +2429,7 @@ class HashTest extends CakeTestCase {
 				)
 			)
 		);
-		$this->assertEquals($result, $expected);
+		$this->assertEquals($expected, $result);
 
 		$data = array('a.b.100.a' => null, 'a.b.200.a' => null);
 		$expected = array(

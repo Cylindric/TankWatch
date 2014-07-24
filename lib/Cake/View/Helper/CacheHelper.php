@@ -2,19 +2,18 @@
 /**
  * CacheHelper helps create full page view caching.
  *
- * PHP 5
- *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.View.Helper
  * @since         CakePHP(tm) v 1.0.0.2277
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('AppHelper', 'View/Helper');
@@ -49,14 +48,14 @@ class CacheHelper extends AppHelper {
 /**
  * Counter used for counting nocache section tags.
  *
- * @var integer
+ * @var int
  */
 	protected $_counter = 0;
 
 /**
  * Is CacheHelper enabled? should files + output be parsed.
  *
- * @return boolean
+ * @return bool
  */
 	protected function _enabled() {
 		return $this->_View->cacheAction && (Configure::read('Cache.check') === true);
@@ -65,8 +64,9 @@ class CacheHelper extends AppHelper {
 /**
  * Parses the view file and stores content for cache file building.
  *
- * @param string $viewFile
- * @return void
+ * @param string $viewFile View file name.
+ * @param string $output The output for the file.
+ * @return string Updated content.
  */
 	public function afterRenderFile($viewFile, $output) {
 		if ($this->_enabled()) {
@@ -77,7 +77,7 @@ class CacheHelper extends AppHelper {
 /**
  * Parses the layout file and stores content for cache file building.
  *
- * @param string $layoutFile
+ * @param string $layoutFile Layout file name.
  * @return void
  */
 	public function afterLayout($layoutFile) {
@@ -107,7 +107,7 @@ class CacheHelper extends AppHelper {
  *
  * @param string $file File to cache
  * @param string $out output to cache
- * @return string view ouput
+ * @return string view output
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/cache.html
  */
 	public function cache($file, $out) {
@@ -126,14 +126,14 @@ class CacheHelper extends AppHelper {
 				}
 			}
 
-			if (!isset($index) && $this->request->params['action'] == 'index') {
+			if (!isset($index) && $this->request->params['action'] === 'index') {
 				$index = 'index';
 			}
 
 			$options = $cacheAction;
 			if (isset($cacheAction[$index])) {
 				if (is_array($cacheAction[$index])) {
-					$options = array_merge(array('duration' => 0, 'callbacks' => false), $cacheAction[$index]);
+					$options = $cacheAction[$index] + array('duration' => 0, 'callbacks' => false);
 				} else {
 					$cacheTime = $cacheAction[$index];
 				}
@@ -266,8 +266,9 @@ class CacheHelper extends AppHelper {
  *
  * @param string $content view content to write to a cache file.
  * @param string $timestamp Duration to set for cache file.
- * @param boolean $useCallbacks
- * @return boolean success of caching view.
+ * @param bool $useCallbacks Whether to include statements in cached file which
+ *   run callbacks.
+ * @return bool success of caching view.
  */
 	protected function _writeFile($content, $timestamp, $useCallbacks = false) {
 		$now = time();
@@ -306,7 +307,7 @@ class CacheHelper extends AppHelper {
 
 		$file .= '
 				$request = unserialize(base64_decode(\'' . base64_encode(serialize($this->request)) . '\'));
-				$response = new CakeResponse();
+				$response->type(\'' . $this->_View->response->type() . '\');
 				$controller = new ' . $this->_View->name . 'Controller($request, $response);
 				$controller->plugin = $this->plugin = \'' . $this->_View->plugin . '\';
 				$controller->helpers = $this->helpers = unserialize(base64_decode(\'' . base64_encode(serialize($this->_View->helpers)) . '\'));

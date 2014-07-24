@@ -4,19 +4,18 @@
  *
  * Provides enhanced logging, stack traces, and rendering debug views
  *
- * PHP 5
- *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Utility
  * @since         CakePHP(tm) v 1.2.4560
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('CakeLog', 'Log');
@@ -80,8 +79,7 @@ class Debugger {
 			'traceLine' => '{:reference} - {:path}, line {:line}',
 			'trace' => "Trace:\n{:trace}\n",
 			'context' => "Context:\n{:context}\n",
-		),
-		'log' => array(),
+		)
 	);
 
 /**
@@ -150,10 +148,10 @@ class Debugger {
 /**
  * Returns a reference to the Debugger singleton object instance.
  *
- * @param string $class
+ * @param string $class Debugger class name.
  * @return object
  */
-	public static function &getInstance($class = null) {
+	public static function getInstance($class = null) {
 		static $instance = array();
 		if (!empty($class)) {
 			if (!$instance || strtolower($class) != strtolower(get_class($instance[0]))) {
@@ -169,14 +167,14 @@ class Debugger {
 /**
  * Recursively formats and outputs the contents of the supplied variable.
  *
- *
  * @param mixed $var the variable to dump
+ * @param int $depth The depth to output to. Defaults to 3.
  * @return void
  * @see Debugger::exportVar()
  * @link http://book.cakephp.org/2.0/en/development/debugging.html#Debugger::dump
  */
-	public static function dump($var) {
-		pr(self::exportVar($var));
+	public static function dump($var, $depth = 3) {
+		pr(self::exportVar($var, $depth));
 	}
 
 /**
@@ -184,25 +182,26 @@ class Debugger {
  * as well as export the variable using exportVar. By default the log is written to the debug log.
  *
  * @param mixed $var Variable or content to log
- * @param integer $level type of log to use. Defaults to LOG_DEBUG
+ * @param int $level type of log to use. Defaults to LOG_DEBUG
+ * @param int $depth The depth to output to. Defaults to 3.
  * @return void
  * @link http://book.cakephp.org/2.0/en/development/debugging.html#Debugger::log
  */
-	public static function log($var, $level = LOG_DEBUG) {
+	public static function log($var, $level = LOG_DEBUG, $depth = 3) {
 		$source = self::trace(array('start' => 1)) . "\n";
-		CakeLog::write($level, "\n" . $source . self::exportVar($var));
+		CakeLog::write($level, "\n" . $source . self::exportVar($var, $depth));
 	}
 
 /**
  * Overrides PHP's default error handling.
  *
- * @param integer $code Code of error
+ * @param int $code Code of error
  * @param string $description Error description
  * @param string $file File on which error occurred
- * @param integer $line Line that triggered the error
+ * @param int $line Line that triggered the error
  * @param array $context Context
- * @return boolean true if error was handled
- * @deprecated This function is superseded by Debugger::outputError()
+ * @return bool true if error was handled
+ * @deprecated Will be removed in 3.0. This function is superseded by Debugger::outputError().
  */
 	public static function showError($code, $description, $file = null, $line = null, $context = null) {
 		$self = Debugger::getInstance();
@@ -229,24 +228,24 @@ class Debugger {
 			case E_USER_ERROR:
 				$error = 'Fatal Error';
 				$level = LOG_ERR;
-			break;
+				break;
 			case E_WARNING:
 			case E_USER_WARNING:
 			case E_COMPILE_WARNING:
 			case E_RECOVERABLE_ERROR:
 				$error = 'Warning';
 				$level = LOG_WARNING;
-			break;
+				break;
 			case E_NOTICE:
 			case E_USER_NOTICE:
 				$error = 'Notice';
 				$level = LOG_NOTICE;
-			break;
+				break;
 			case E_DEPRECATED:
 			case E_USER_DEPRECATED:
 				$error = 'Deprecated';
 				$level = LOG_NOTICE;
-			break;
+				break;
 			default:
 				return;
 		}
@@ -256,7 +255,7 @@ class Debugger {
 		);
 		echo $self->outputError($data);
 
-		if ($error == 'Fatal Error') {
+		if ($error === 'Fatal Error') {
 			exit();
 		}
 		return true;
@@ -325,9 +324,9 @@ class Debugger {
 			if (in_array($signature, $options['exclude'])) {
 				continue;
 			}
-			if ($options['format'] == 'points' && $trace['file'] != '[internal]') {
+			if ($options['format'] === 'points' && $trace['file'] !== '[internal]') {
 				$back[] = array('file' => $trace['file'], 'line' => $trace['line']);
-			} elseif ($options['format'] == 'array') {
+			} elseif ($options['format'] === 'array') {
 				$back[] = $trace;
 			} else {
 				if (isset($self->_templates[$options['format']]['traceLine'])) {
@@ -342,7 +341,7 @@ class Debugger {
 			}
 		}
 
-		if ($options['format'] == 'array' || $options['format'] == 'points') {
+		if ($options['format'] === 'array' || $options['format'] === 'points') {
 			return $back;
 		}
 		return implode("\n", $back);
@@ -384,8 +383,8 @@ class Debugger {
  * applied.
  *
  * @param string $file Absolute path to a PHP file
- * @param integer $line Line number to highlight
- * @param integer $context Number of lines of context to extract above and below $line
+ * @param int $line Line number to highlight
+ * @param int $context Number of lines of context to extract above and below $line
  * @return array Set of lines highlighted
  * @see http://php.net/highlight_string
  * @link http://book.cakephp.org/2.0/en/development/debugging.html#Debugger::excerpt
@@ -420,7 +419,7 @@ class Debugger {
 	}
 
 /**
- * Wraps the highlight_string funciton in case the server API does not
+ * Wraps the highlight_string function in case the server API does not
  * implement the function as it is the case of the HipHop interpreter
  *
  * @param string $str the string to convert
@@ -464,7 +463,7 @@ class Debugger {
  * shown in an error message if CakePHP is deployed in development mode.
  *
  * @param string $var Variable to convert
- * @param integer $depth The depth to output to. Defaults to 3.
+ * @param int $depth The depth to output to. Defaults to 3.
  * @return string Variable as a formatted string
  * @link http://book.cakephp.org/2.0/en/development/debugging.html#Debugger::exportVar
  */
@@ -476,8 +475,8 @@ class Debugger {
  * Protected export function used to keep track of indentation and recursion.
  *
  * @param mixed $var The variable to dump.
- * @param integer $depth The remaining depth.
- * @param integer $indent The current indentation level.
+ * @param int $depth The remaining depth.
+ * @param int $indent The current indentation level.
  * @return string The dumped variable.
  */
 	protected static function _export($var, $depth, $indent) {
@@ -499,6 +498,8 @@ class Debugger {
 				return strtolower(gettype($var));
 			case 'null':
 				return 'null';
+			case 'unknown':
+				return 'unknown';
 			default:
 				return self::_object($var, $depth - 1, $indent + 1);
 		}
@@ -518,8 +519,8 @@ class Debugger {
  * - schema
  *
  * @param array $var The array to export.
- * @param integer $depth The current depth, used for recursion tracking.
- * @param integer $indent The current indentation level.
+ * @param int $depth The current depth, used for recursion tracking.
+ * @param int $indent The current indentation level.
  * @return string Exported array.
  */
 	protected static function _array(array $var, $depth, $indent) {
@@ -536,9 +537,8 @@ class Debugger {
 		$var = $replace + $var;
 
 		$out = "array(";
-		$n = $break = $end = null;
+		$break = $end = null;
 		if (!empty($var)) {
-			$n = "\n";
 			$break = "\n" . str_repeat("\t", $indent);
 			$end = "\n" . str_repeat("\t", $indent - 1);
 		}
@@ -549,7 +549,7 @@ class Debugger {
 				// Sniff for globals as !== explodes in < 5.4
 				if ($key === 'GLOBALS' && is_array($val) && isset($val['GLOBALS'])) {
 					$val = '[recursion]';
-				} else if ($val !== $var) {
+				} elseif ($val !== $var) {
 					$val = self::_export($val, $depth, $indent);
 				}
 				$vars[] = $break . self::exportVar($key) .
@@ -566,8 +566,8 @@ class Debugger {
  * Handles object to string conversion.
  *
  * @param string $var Object to convert
- * @param integer $depth The current depth, used for tracking recursion.
- * @param integer $indent The current indentation level.
+ * @param int $depth The current depth, used for tracking recursion.
+ * @param int $indent The current indentation level.
  * @return string
  * @see Debugger::exportVar()
  */
@@ -590,24 +590,20 @@ class Debugger {
 			if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 				$ref = new ReflectionObject($var);
 
-				$reflectionProperties = $ref->getProperties(ReflectionProperty::IS_PROTECTED);
-				foreach ($reflectionProperties as $reflectionProperty) {
-					$reflectionProperty->setAccessible(true);
-					$property = $reflectionProperty->getValue($var);
+				$filters = array(
+					ReflectionProperty::IS_PROTECTED => 'protected',
+					ReflectionProperty::IS_PRIVATE => 'private',
+				);
+				foreach ($filters as $filter => $visibility) {
+					$reflectionProperties = $ref->getProperties($filter);
+					foreach ($reflectionProperties as $reflectionProperty) {
+						$reflectionProperty->setAccessible(true);
+						$property = $reflectionProperty->getValue($var);
 
-					$value = self::_export($property, $depth - 1, $indent);
-					$key = $reflectionProperty->name;
-					$props[] = "[protected] $key => " . $value;
-				}
-
-				$reflectionProperties = $ref->getProperties(ReflectionProperty::IS_PRIVATE);
-				foreach ($reflectionProperties as $reflectionProperty) {
-					$reflectionProperty->setAccessible(true);
-					$property = $reflectionProperty->getValue($var);
-
-					$value = self::_export($property, $depth - 1, $indent);
-					$key = $reflectionProperty->name;
-					$props[] = "[private] $key => " . $value;
+						$value = self::_export($property, $depth - 1, $indent);
+						$key = $reflectionProperty->name;
+						$props[] = sprintf('[%s] %s => %s', $visibility, $key, $value);
+					}
 				}
 			}
 
@@ -700,14 +696,14 @@ class Debugger {
  *    straight HTML output, or 'txt' for unformatted text.
  * @param array $strings Template strings to be used for the output format.
  * @return string
- * @deprecated Use Debugger::outputAs() and  Debugger::addFormat(). Will be removed
+ * @deprecated Use Debugger::outputAs() and Debugger::addFormat(). Will be removed
  *   in 3.0
  */
-	public function output($format = null, $strings = array()) {
+	public static function output($format = null, $strings = array()) {
 		$self = Debugger::getInstance();
 		$data = null;
 
-		if (is_null($format)) {
+		if ($format === null) {
 			return Debugger::outputAs();
 		}
 
@@ -727,7 +723,7 @@ class Debugger {
 /**
  * Takes a processed array of data from an error and displays it in the chosen format.
  *
- * @param string $data
+ * @param string $data Data to output.
  * @return void
  */
 	public function outputError($data) {
@@ -806,7 +802,7 @@ class Debugger {
 	}
 
 /**
- * Get the type of the given variable. Will return the classname
+ * Get the type of the given variable. Will return the class name
  * for objects.
  *
  * @param mixed $var The variable to get the type of
@@ -816,7 +812,7 @@ class Debugger {
 		if (is_object($var)) {
 			return get_class($var);
 		}
-		if (is_null($var)) {
+		if ($var === null) {
 			return 'null';
 		}
 		if (is_string($var)) {
@@ -846,12 +842,12 @@ class Debugger {
  * @return void
  */
 	public static function checkSecurityKeys() {
-		if (Configure::read('Security.salt') == 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi') {
-			trigger_error(__d('cake_dev', 'Please change the value of \'Security.salt\' in app/Config/core.php to a salt value specific to your application'), E_USER_NOTICE);
+		if (Configure::read('Security.salt') === 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi') {
+			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a salt value specific to your application.', '\'Security.salt\'', 'APP/Config/core.php'), E_USER_NOTICE);
 		}
 
 		if (Configure::read('Security.cipherSeed') === '76859309657453542496749683645') {
-			trigger_error(__d('cake_dev', 'Please change the value of \'Security.cipherSeed\' in app/Config/core.php to a numeric (digits only) seed value specific to your application'), E_USER_NOTICE);
+			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a numeric (digits only) seed value specific to your application.', '\'Security.cipherSeed\'', 'APP/Config/core.php'), E_USER_NOTICE);
 		}
 	}
 

@@ -2,37 +2,58 @@
 /**
  * DboSourceTest file
  *
- * PHP 5
- *
  * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
- *	Licensed under The Open Group Test Suite License
- *	Redistributions of files must retain the above copyright notice.
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model.Datasource
  * @since         CakePHP(tm) v 1.2.0.4206
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
 App::uses('DataSource', 'Model/Datasource');
 App::uses('DboSource', 'Model/Datasource');
+App::uses('DboTestSource', 'Model/Datasource');
+App::uses('DboSecondTestSource', 'Model/Datasource');
+App::uses('MockDataSource', 'Model/Datasource');
+
 require_once dirname(dirname(__FILE__)) . DS . 'models.php';
 
+/**
+ * Class MockPDO
+ *
+ * @package       Cake.Test.Case.Model.Datasource
+ */
 class MockPDO extends PDO {
 
+/**
+ * Constructor.
+ */
 	public function __construct() {
 	}
 
 }
 
+/**
+ * Class MockDataSource
+ *
+ * @package       Cake.Test.Case.Model.Datasource
+ */
 class MockDataSource extends DataSource {
 }
 
+/**
+ * Class DboTestSource
+ *
+ * @package       Cake.Test.Case.Model.Datasource
+ */
 class DboTestSource extends DboSource {
 
 	public $nestedSupport = false;
@@ -59,6 +80,11 @@ class DboTestSource extends DboSource {
 
 }
 
+/**
+ * Class DboSecondTestSource
+ *
+ * @package       Cake.Test.Case.Model.Datasource
+ */
 class DboSecondTestSource extends DboSource {
 
 	public $startQuote = '_';
@@ -93,7 +119,7 @@ class DboSourceTest extends CakeTestCase {
 /**
  * autoFixtures property
  *
- * @var bool false
+ * @var bool
  */
 	public $autoFixtures = false;
 
@@ -114,7 +140,6 @@ class DboSourceTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->__config = $this->db->config;
 
 		$this->testDb = new DboTestSource();
 		$this->testDb->cacheSources = false;
@@ -520,7 +545,6 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
- *
  * @expectedException PDOException
  * @return void
  */
@@ -546,7 +570,7 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
- * testReconnect method
+ * Tests if the connection can be re-established and that the new (optional) config is set.
  *
  * @return void
  */
@@ -661,6 +685,22 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
+ * Test that flushMethodCache works as expected
+ *
+ * @return void
+ */
+	public function testFlushMethodCache() {
+		$this->testDb->cacheMethods = true;
+		$this->testDb->cacheMethod('name', 'some-key', 'stuff');
+
+		Cache::write('method_cache', DboTestSource::$methodCache, '_cake_core_');
+
+		$this->testDb->flushMethodCache();
+		$result = $this->testDb->cacheMethod('name', 'some-key');
+		$this->assertNull($result);
+	}
+
+/**
  * testLog method
  *
  * @outputBuffering enabled
@@ -718,11 +758,11 @@ class DboSourceTest extends CakeTestCase {
  * @return void
  */
 	public function testGetLogParams() {
-		$this->testDb->logQuery('Query 1', array(1,2,'abc'));
+		$this->testDb->logQuery('Query 1', array(1, 2, 'abc'));
 		$this->testDb->logQuery('Query 2', array('field1' => 1, 'field2' => 'abc'));
 
 		$log = $this->testDb->getLog();
-		$expected = array('query' => 'Query 1', 'params' => array(1,2,'abc'), 'affected' => '', 'numRows' => '', 'took' => '');
+		$expected = array('query' => 'Query 1', 'params' => array(1, 2, 'abc'), 'affected' => '', 'numRows' => '', 'took' => '');
 		$this->assertEquals($expected, $log['log'][0]);
 		$expected = array('query' => 'Query 2', 'params' => array('field1' => 1, 'field2' => 'abc'), 'affected' => '', 'numRows' => '', 'took' => '');
 		$this->assertEquals($expected, $log['log'][1]);
@@ -830,7 +870,7 @@ class DboSourceTest extends CakeTestCase {
  */
 	public function testQueryAssociationUnneededQueries() {
 		$this->loadFixtures('Article', 'User', 'Comment', 'Attachment', 'Tag', 'ArticlesTag');
-		$Comment = new Comment;
+		$Comment = ClassRegistry::init('Comment');
 
 		$fullDebug = $this->db->fullDebug;
 		$this->db->fullDebug = true;
@@ -838,7 +878,7 @@ class DboSourceTest extends CakeTestCase {
 		$Comment->find('all', array('recursive' => 2)); // ensure Model descriptions are saved
 		$this->db->getLog();
 
-		// case: Comment  belongsTo User and Article
+		// case: Comment belongsTo User and Article
 		$Comment->unbindModel(array(
 			'hasOne' => array('Attachment')
 		));
@@ -876,6 +916,40 @@ class DboSourceTest extends CakeTestCase {
 		$this->assertEquals(1, count($log['log']));
 
 		$this->db->fullDebug = $fullDebug;
+	}
+
+/**
+ * Tests that generation association queries without LinkModel still works.
+ * Mainly BC.
+ *
+ * @return void
+ */
+	public function testGenerateAssociationQuery() {
+		$this->loadFixtures('Article');
+		$Article = ClassRegistry::init('Article');
+
+		$queryData = array(
+			'conditions' => array(
+				'Article.id' => 1
+			),
+			'fields' => array(
+				'Article.id',
+				'Article.title',
+			),
+			'joins' => array(),
+			'limit' => 2,
+			'offset' => 2,
+			'order' => array('title'),
+			'page' => 2,
+			'group' => null,
+			'callbacks' => 1
+		);
+
+		$result = $this->db->generateAssociationQuery($Article, null, null, null, null, $queryData, false);
+		$this->assertContains('SELECT', $result);
+		$this->assertContains('FROM', $result);
+		$this->assertContains('WHERE', $result);
+		$this->assertContains('ORDER', $result);
 	}
 
 /**
@@ -923,6 +997,31 @@ class DboSourceTest extends CakeTestCase {
 	}
 
 /**
+ * test that fields() method cache detects schema name changes
+ *
+ * @return void
+ */
+	public function testFieldsCacheKeyWithSchemanameChange() {
+		if ($this->db instanceof Postgres || $this->db instanceof Sqlserver) {
+			$this->markTestSkipped('Cannot run this test with SqlServer or Postgres');
+		}
+		Cache::delete('method_cache', '_cake_core_');
+		DboSource::$methodCache = array();
+		$Article = ClassRegistry::init('Article');
+
+		$ds = $Article->getDataSource();
+		$ds->cacheMethods = true;
+		$first = $ds->fields($Article);
+
+		$Article->schemaName = 'secondSchema';
+		$ds = $Article->getDataSource();
+		$ds->cacheMethods = true;
+		$second = $ds->fields($Article);
+
+		$this->assertEquals(2, count(DboSource::$methodCache['fields']));
+	}
+
+/**
  * Test that group works without a model
  *
  * @return void
@@ -934,6 +1033,8 @@ class DboSourceTest extends CakeTestCase {
 
 /**
  * Test getting the last error.
+ *
+ * @return void
  */
 	public function testLastError() {
 		$stmt = $this->getMock('PDOStatement');
@@ -953,7 +1054,7 @@ class DboSourceTest extends CakeTestCase {
  */
 	public function testTransactionLogging() {
 		$conn = $this->getMock('MockPDO');
-		$db = new DboTestSource;
+		$db = new DboTestSource();
 		$db->setConnection($conn);
 		$conn->expects($this->exactly(2))->method('beginTransaction')
 			->will($this->returnValue(true));
@@ -1066,7 +1167,7 @@ class DboSourceTest extends CakeTestCase {
 		$conn->expects($this->at(0))
 			->method('quote')
 			->will($this->returnValue('foo bar'));
-		$db = new DboTestSource;
+		$db = new DboTestSource();
 		$db->setConnection($conn);
 		$subQuery = $db->buildStatement(
 			array(
@@ -1079,7 +1180,7 @@ class DboSourceTest extends CakeTestCase {
 			),
 			$this->Model
 		);
-		$expected = 'SELECT DISTINCT(AssetsTag.asset_id) FROM assets_tags AS AssetsTag   WHERE Tag.name = foo bar  GROUP BY AssetsTag.asset_id  ';
+		$expected = 'SELECT DISTINCT(AssetsTag.asset_id) FROM assets_tags AS AssetsTag   WHERE Tag.name = foo bar  GROUP BY AssetsTag.asset_id';
 		$this->assertEquals($expected, $subQuery);
 	}
 
@@ -1088,8 +1189,14 @@ class DboSourceTest extends CakeTestCase {
  *
  * @return array
  */
-	public static function joinStatements($schema) {
+	public static function joinStatements() {
 		return array(
+			array(array(
+				'type' => 'CROSS',
+				'alias' => 'PostsTag',
+				'table' => 'posts_tags',
+				'conditions' => array('1 = 1')
+			), 'CROSS JOIN cakephp.posts_tags AS PostsTag'),
 			array(array(
 				'type' => 'LEFT',
 				'alias' => 'PostsTag',
@@ -1151,7 +1258,7 @@ class DboSourceTest extends CakeTestCase {
  * @return void
  */
 	public function testBuildJoinStatementWithTablePrefix($join, $expected) {
-		$db = new DboTestSource;
+		$db = new DboTestSource();
 		$db->config['prefix'] = 'pre_';
 		$result = $db->buildJoinStatement($join);
 		$this->assertEquals($expected, $result);
@@ -1165,7 +1272,7 @@ class DboSourceTest extends CakeTestCase {
 	public function testConditionKeysToString() {
 		$Article = ClassRegistry::init('Article');
 		$conn = $this->getMock('MockPDO', array('quote'));
-		$db = new DboTestSource;
+		$db = new DboTestSource();
 		$db->setConnection($conn);
 
 		$conn->expects($this->at(0))
@@ -1201,7 +1308,7 @@ class DboSourceTest extends CakeTestCase {
 			'extra' => 'something virtual'
 		);
 		$conn = $this->getMock('MockPDO', array('quote'));
-		$db = new DboTestSource;
+		$db = new DboTestSource();
 		$db->setConnection($conn);
 
 		$conn->expects($this->at(0))
@@ -1226,4 +1333,127 @@ class DboSourceTest extends CakeTestCase {
 		$this->assertEquals($expected, $result[0]);
 	}
 
+/**
+ * Test the limit function.
+ *
+ * @return void
+ */
+	public function testLimit() {
+		$db = new DboTestSource();
+
+		$result = $db->limit('0');
+		$this->assertNull($result);
+
+		$result = $db->limit('10');
+		$this->assertEquals(' LIMIT 10', $result);
+
+		$result = $db->limit('FARTS', 'BOOGERS');
+		$this->assertEquals(' LIMIT 0, 0', $result);
+
+		$result = $db->limit(20, 10);
+		$this->assertEquals(' LIMIT 10, 20', $result);
+
+		$result = $db->limit(10, 300000000000000000000000000000);
+		$scientificNotation = sprintf('%.1E', 300000000000000000000000000000);
+		$this->assertNotContains($scientificNotation, $result);
+	}
+
+/**
+ * Test insertMulti with id position.
+ *
+ * @return void
+ */
+	public function testInsertMultiId() {
+		$this->loadFixtures('Article');
+		$Article = ClassRegistry::init('Article');
+		$db = $Article->getDatasource();
+		$datetime = date('Y-m-d H:i:s');
+		$data = array(
+			array(
+				'user_id' => 1,
+				'title' => 'test',
+				'body' => 'test',
+				'published' => 'N',
+				'created' => $datetime,
+				'updated' => $datetime,
+				'id' => 100,
+			),
+			array(
+				'user_id' => 1,
+				'title' => 'test 101',
+				'body' => 'test 101',
+				'published' => 'N',
+				'created' => $datetime,
+				'updated' => $datetime,
+				'id' => 101,
+			)
+		);
+		$result = $db->insertMulti('articles', array_keys($data[0]), $data);
+		$this->assertTrue($result, 'Data was saved');
+
+		$data = array(
+			array(
+				'id' => 102,
+				'user_id' => 1,
+				'title' => 'test',
+				'body' => 'test',
+				'published' => 'N',
+				'created' => $datetime,
+				'updated' => $datetime,
+			),
+			array(
+				'id' => 103,
+				'user_id' => 1,
+				'title' => 'test 101',
+				'body' => 'test 101',
+				'published' => 'N',
+				'created' => $datetime,
+				'updated' => $datetime,
+			)
+		);
+
+		$result = $db->insertMulti('articles', array_keys($data[0]), $data);
+		$this->assertTrue($result, 'Data was saved');
+	}
+
+/**
+ * Test defaultConditions()
+ *
+ * @return void
+ */
+	public function testDefaultConditions() {
+		$this->loadFixtures('Article');
+		$Article = ClassRegistry::init('Article');
+		$db = $Article->getDataSource();
+
+		// Creates a default set of conditions from the model if $conditions is null/empty.
+		$Article->id = 1;
+		$result = $db->defaultConditions($Article, null);
+		$this->assertEquals(array('Article.id' => 1), $result);
+
+		// $useAlias == false
+		$Article->id = 1;
+		$result = $db->defaultConditions($Article, null, false);
+		$this->assertEquals(array($db->fullTableName($Article, false) . '.id' => 1), $result);
+
+		// If conditions are supplied then they will be returned.
+		$Article->id = 1;
+		$result = $db->defaultConditions($Article, array('Article.title' => 'First article'));
+		$this->assertEquals(array('Article.title' => 'First article'), $result);
+
+		// If a model doesn't exist and no conditions were provided either null or false will be returned based on what was input.
+		$Article->id = 1000000;
+		$result = $db->defaultConditions($Article, null);
+		$this->assertNull($result);
+
+		$Article->id = 1000000;
+		$result = $db->defaultConditions($Article, false);
+		$this->assertFalse($result);
+
+		// Safe update mode
+		$Article->id = 1000000;
+		$Article->__safeUpdateMode = true;
+		$result = $db->defaultConditions($Article, null);
+		$this->assertFalse($result);
+	}
 }
