@@ -9,3 +9,11 @@ VALUES
 	('Bamboo Shrimp', 'Malacostraca', 'Atyopsis', NOW(), NOW()),
 	('Red Tailed Shark', 'Actinopterygii', 'Epalzeorhynchos bicolor', NOW(), NOW())
 ;
+
+
+SELECT * FROM `units`;
+SELECT * FROM `users`;
+SELECT * FROM `species`;
+
+DELETE FROM users;
+DELETE FROM units;
