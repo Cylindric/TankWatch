@@ -52,7 +52,6 @@ CREATE TABLE `properties` (
 /* Creating table Results */;
 CREATE TABLE `results` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`user_id` INT NOT NULL,
 	`test_id` INT NOT NULL,
 	`unit_id` INT NOT NULL,
 	`test_set_id` INT NOT NULL,
@@ -62,7 +61,6 @@ CREATE TABLE `results` (
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	INDEX(`test_id`),
-	INDEX(`user_id`),
 	INDEX(`unit_id`),
 	INDEX(`test_set_id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -88,7 +86,10 @@ CREATE TABLE `species_properties` (
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
 	PRIMARY KEY (`id`),
-	INDEX (`id`, `species_id`)
+	INDEX (`species_id`),
+	INDEX (`propertytype_id`),
+	INDEX (`min_property_id`),
+	INDEX (`max_property_id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /* Creating table Species Tanks */;
@@ -182,26 +183,28 @@ CREATE TABLE `users` (
         UNIQUE KEY (`email`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-/* Adding foreign key constraints to Results */;
 ALTER TABLE `results`
-	ADD CONSTRAINT `fk_results_users` FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_results_tests` FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_results_units` FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_results_test_sets` FOREIGN KEY (test_set_id) REFERENCES test_sets(id) ON DELETE CASCADE
+	ADD CONSTRAINT `fk_results_tests` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_results_units` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_results_test_sets` FOREIGN KEY (`test_set_id`) REFERENCES `test_sets` (`id`) ON DELETE CASCADE
 ;
 
-/* Adding foreign key constraints to Species Tanks */;
+ALTER TABLE `species_properties`
+	ADD CONSTRAINT `fk_species_properties_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_species_properties_propertytype` FOREIGN KEY (`propertytype_id`) REFERENCES `propertytypes` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_species_properties_property_min` FOREIGN KEY (`min_property_id`) REFERENCES `properties` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_species_properties_property_max` FOREIGN KEY (`max_property_id`) REFERENCES `properties` (`id`) ON DELETE CASCADE
+;
+
 ALTER TABLE `species_tanks`
-	ADD CONSTRAINT `fk_species_tanks_species` FOREIGN KEY (species_id) REFERENCES species(id) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_species_tanks_tanks` FOREIGN KEY (tank_id) REFERENCES tanks(id) ON DELETE CASCADE
+	ADD CONSTRAINT `fk_species_tanks_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_species_tanks_tanks` FOREIGN KEY (`tank_id`) REFERENCES `tanks` (`id`) ON DELETE CASCADE
 ;
 
-/* Adding foreign key constraints to Tanks */;
 ALTER TABLE `tanks`
-	ADD CONSTRAINT `fk_tanks_users` FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	ADD CONSTRAINT `fk_tanks_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ;
 
-/* Adding foreign key constraints to Test Sets */;
 ALTER TABLE `test_sets`
-	ADD CONSTRAINT `fk_test_sets_users` FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	ADD CONSTRAINT `fk_test_sets_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ;
