@@ -59,6 +59,7 @@ use Cake\Utility\Inflector;
 try {
 	Configure::config('default', new PhpConfig());
 	Configure::load('app.php', 'default', false);
+	Configure::load('tankwatch.php', 'default');
 } catch (\Exception $e) {
 	die('Unable to load Config/app.php. Create it by copying Config/app.default.php to Config/app.php.');
 }
