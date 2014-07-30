@@ -12,7 +12,10 @@ class InstallController extends AppController {
         $this->loadModel('Users');
         $this->loadModel('Units');
         $this->loadModel('Species');
-
+        $this->loadModel('Propertytypes');
+        $this->loadModel('Properties');
+        $this->loadModel('SpeciesProperties');
+        
         // If nothing installed, allow the install action
         if ($this->Installs->CurrentSchemaVersion() === 0) {
             $this->Auth->allow(['install']);
@@ -76,6 +79,24 @@ class InstallController extends AppController {
             }
         }
 
+        $propertytypes = [
+            ['name' => 'Temperature', 'code' => 'temp', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'Acidity', 'code' => 'pH', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'General Hardness', 'code' => 'GH', 'display_format' => '%d', 'is_test' => true],
+            ['name' => 'Carbonate Hardness', 'code' => 'KH', 'display_format' => '%d', 'is_test' => true],
+            ['name' => 'Nitrites', 'code' => 'NO<sub>2</sub>', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'Nitrates', 'code' => 'NO<sub>3</sub>', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'Ammonia', 'code' => 'NH<sub>3</sub>', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'Ammonium', 'code' => 'NH<sub>4</sub>', 'display_format' => '%.1f', 'is_test' => true],
+            ['name' => 'Length', 'code' => 'Length', 'display_format' => '%.0f', 'is_test' => false],
+        ];
+         foreach ($propertytypes as $new) {
+            if ($this->Propertytypes->find()->where($new)->count() == 0) {
+                $this->Propertytypes->save($this->Propertytypes->newEntity($new));
+                $messages[] = sprintf('Added missing Property Type <em>%s</em>.', $new['name']);
+            }
+        }
+        
         $species = [
             ['name' => 'Gold Cobra Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'],
             ['name' => 'Purple Harlequin Rasbora', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Trigonostigma heteromorpha'],
@@ -92,6 +113,11 @@ class InstallController extends AppController {
                 $messages[] = sprintf('Added missing Species <em>%s</em>.', $new['name']);
             }
         }
+        
+        // Add some properties to the demo species
+        $pt = $this->Propertytypes->find()->where(['code'=>'pH'])->first();
+        $s = $this->Species->find()->where(['name'=>'Gold Cobra Guppy'])->first();
+        //$sp = $this->SpeciesProperties->newEntity();
     }
 
 }

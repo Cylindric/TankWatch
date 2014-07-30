@@ -6,15 +6,15 @@ class SpeciesController extends AppController {
 
     public $components = ['Csrf', 'Flash'];
 
-    public function isAuthorized($user){
+    public function isAuthorized($user) {
         // Anyone can view species
-        if($this->request->action === 'index'){
+        if ($this->request->action === 'index') {
             return true;
         }
-        
+
         return parent::isAuthorized($user);
     }
-    
+
     public function index() {
         $species = $this->Species->find('all');
         $this->set(compact('species'));
@@ -25,7 +25,11 @@ class SpeciesController extends AppController {
             throw new NotFoundException('Invalid Species.');
         }
 
-        $species = $this->Species->get($id);
+        $species = $this->Species->find()
+                ->where(['id' => $id])
+                ->contain(['SpeciesProperties', 'SpeciesProperties.Propertytypes', 'SpeciesProperties.MinProperties', 'SpeciesProperties.MaxProperties'])
+                ->first();
+        
         $this->set(compact('species'));
     }
 

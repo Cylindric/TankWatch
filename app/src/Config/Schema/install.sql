@@ -200,6 +200,11 @@ ALTER TABLE `species_properties`
 	ADD CONSTRAINT `fk_species_properties_property_max` FOREIGN KEY (`max_property_id`) REFERENCES `properties` (`id`) ON DELETE CASCADE
 ;
 
+/* Adding contraints to table Properties. */;
+ALTER TABLE `properties`
+	ADD CONSTRAINT `fk_properties_propertytype` FOREIGN KEY (`propertytype_id`) REFERENCES `propertytypes` (`id`) ON DELETE CASCADE
+;
+
 /* Adding contraints to table Species Tanks. */;
 ALTER TABLE `species_tanks`
 	ADD CONSTRAINT `fk_species_tanks_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE,
