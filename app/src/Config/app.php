@@ -251,8 +251,13 @@ $config = [
 			'file' => 'error',
 			'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
 		],
-	],
-
+                'queries' => [
+                        'className' => 'File',
+                        'file' => 'queries.log',
+                        'scopes' => ['queriesLog'],
+                ],
+        ],
+    
 /**
  *
  * Session configuration.

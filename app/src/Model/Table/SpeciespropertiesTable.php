@@ -10,9 +10,11 @@ class SpeciespropertiesTable extends Table {
         $this->table('species_properties');
 
         $this->belongsTo('Species');
-        $this->belongsTo('MinProperties', ['className' => 'Properties', 'foreignKey' => 'min_property_id']);
-        $this->belongsTo('MaxProperties', ['className' => 'Properties', 'foreignKey' => 'max_property_id']);
         $this->belongsTo('Propertytypes');
+        
+        $this->hasOne('MinProperties', ['className' => 'Properties', 'foreignKey' => 'min_property_id']);
+        $this->hasOne('MaxProperties', ['className' => 'Properties', 'foreignKey' => 'max_property_id']);
+        
 
         $this->addBehavior('Timestamp');
     }

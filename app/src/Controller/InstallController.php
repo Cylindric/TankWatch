@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use Cake\Event\Event;
+use Cake\Datasource\ConnectionManager;
+use App\Model\Entity\Speciesproperty;
+use App\Model\Entity\Property;
 
 class InstallController extends AppController {
 
@@ -15,14 +18,12 @@ class InstallController extends AppController {
         $this->loadModel('Propertytypes');
         $this->loadModel('Properties');
         $this->loadModel('SpeciesProperties');
-        
-        // If nothing installed, allow the install action
-        if ($this->Installs->CurrentSchemaVersion() === 0) {
-            $this->Auth->allow(['install']);
-        }
 
-        // If no users exist, allow the install action
-        if ($this->Users->find()->count() === 0) {
+        if ($this->Installs->CurrentSchemaVersion() === 0) {
+            // If nothing installed, allow the install action
+            $this->Auth->allow(['install']);
+        } elseif ($this->Users->find()->count() === 0) {
+            // If no users exist, allow the install action
             $this->Auth->allow(['install']);
         }
     }
@@ -90,13 +91,13 @@ class InstallController extends AppController {
             ['name' => 'Ammonium', 'code' => 'NH<sub>4</sub>', 'display_format' => '%.1f', 'is_test' => true],
             ['name' => 'Length', 'code' => 'Length', 'display_format' => '%.0f', 'is_test' => false],
         ];
-         foreach ($propertytypes as $new) {
+        foreach ($propertytypes as $new) {
             if ($this->Propertytypes->find()->where($new)->count() == 0) {
                 $this->Propertytypes->save($this->Propertytypes->newEntity($new));
                 $messages[] = sprintf('Added missing Property Type <em>%s</em>.', $new['name']);
             }
         }
-        
+
         $species = [
             ['name' => 'Gold Cobra Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'],
             ['name' => 'Purple Harlequin Rasbora', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Trigonostigma heteromorpha'],
@@ -113,11 +114,24 @@ class InstallController extends AppController {
                 $messages[] = sprintf('Added missing Species <em>%s</em>.', $new['name']);
             }
         }
-        
+
         // Add some properties to the demo species
-        $pt = $this->Propertytypes->find()->where(['code'=>'pH'])->first();
-        $s = $this->Species->find()->where(['name'=>'Gold Cobra Guppy'])->first();
-        //$sp = $this->SpeciesProperties->newEntity();
+        $pt = $this->Propertytypes->find()->where(['code' => 'pH'])->first();
+        $s = $this->Species->find()->where(['name' => 'Gold Cobra Guppy'])->first();
+
+        $sp = new Speciesproperty([
+            'species_id' => $s->id,
+            'propertytype' => $pt,
+            'minproperty' => new Property(['property_type' => $pt, 'value' => 1, 'source' => 'web']),
+            'maxproperty' => new Property(['property_type' => $pt, 'value' => 2, 'source' => 'web']),
+        ]);
+        debug($sp);
+//        $sp->MinProperties = [new Property(['property_type' => $pt, 'value' => 1, 'source' => 'web'])];
+        //$sp->MaxProperties = [new Property(['property_type' => $pt, 'value' => 2, 'source' => 'web'])];
+
+        ConnectionManager::get('default')->logQueries(true);
+        $this->SpeciesProperties->save($sp, ['associated' => ['Propertytypes', 'Minproperties', 'Maxproperties']]);
+        ConnectionManager::get('default')->logQueries(false);
     }
 
 }

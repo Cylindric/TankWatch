@@ -9,7 +9,7 @@ class PropertiesTable extends Table {
 
     public function initialize(array $config) {
         $this->belongsTo('SpeciesProperties');
-        $this->hasOne('Propertytypes');
+        $this->belongsTo('Propertytypes');
 
         $this->addBehavior('Timestamp');
     }
