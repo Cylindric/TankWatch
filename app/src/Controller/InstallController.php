@@ -6,6 +6,7 @@ use Cake\Event\Event;
 use Cake\Datasource\ConnectionManager;
 use App\Model\Entity\Speciesproperty;
 use App\Model\Entity\Property;
+use Cake\Utility\Debugger;
 
 class InstallController extends AppController {
 
@@ -102,10 +103,11 @@ class InstallController extends AppController {
             ['name' => 'Gold Cobra Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'],
             ['name' => 'Purple Harlequin Rasbora', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Trigonostigma heteromorpha'],
             ['name' => 'Red Cherry Shrimp', 'scientific_class' => 'Malacostraca', 'scientific_name' => 'Neocaridina heteropoda'],
-            ['name' => 'Gold Ring Butterfly Sucker', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Balitora lineolata'],
+            ['name' => 'Gold Ring Butterfly Loach', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Balitora lineolata'],
             ['name' => 'Rosy Barb', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Pethia conchonius'],
             ['name' => 'Snakeskin Guppy', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Poecilia reticulata'],
             ['name' => 'Bamboo Shrimp', 'scientific_class' => 'Malacostraca', 'scientific_name' => 'Atyopsis'],
+            ['name' => 'Ram Cichlid', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Mikrogeophagus ramirezi'],
             ['name' => 'Red Tailed Shark', 'scientific_class' => 'Actinopterygii', 'scientific_name' => 'Epalzeorhynchos bicolor'],
         ];
         foreach ($species as $new) {
@@ -116,22 +118,54 @@ class InstallController extends AppController {
         }
 
         // Add some properties to the demo species
-        $pt = $this->Propertytypes->find()->where(['code' => 'pH'])->first();
-        $s = $this->Species->find()->where(['name' => 'Gold Cobra Guppy'])->first();
+        $p_temp = $this->Propertytypes->find()->where(['code' => 'temp'])->first();
+        $p_ph = $this->Propertytypes->find()->where(['code' => 'pH'])->first();
 
-        $sp = new Speciesproperty([
-            'species_id' => $s->id,
-            'propertytype' => $pt,
-            'minproperty' => new Property(['property_type' => $pt, 'value' => 1, 'source' => 'web']),
-            'maxproperty' => new Property(['property_type' => $pt, 'value' => 2, 'source' => 'web']),
-        ]);
-        debug($sp);
-//        $sp->MinProperties = [new Property(['property_type' => $pt, 'value' => 1, 'source' => 'web'])];
-        //$sp->MaxProperties = [new Property(['property_type' => $pt, 'value' => 2, 'source' => 'web'])];
+        $s = $this->Species->find()->where(['name' => 'Bamboo Shrimp'])->contain(['Properties'])->first();
+        $s->properties = [
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '1', 'value' => 6.5, 'source' => 'demo']),
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '2', 'value' => 7.8, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '1', 'value' => 21.1, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '2', 'value' => 25.6, 'source' => 'demo'])
+        ];
+        $this->Species->save($s);
 
-        ConnectionManager::get('default')->logQueries(true);
-        $this->SpeciesProperties->save($sp, ['associated' => ['Propertytypes', 'Minproperties', 'Maxproperties']]);
-        ConnectionManager::get('default')->logQueries(false);
+        $s = $this->Species->find()->where(['name' => 'Gold Ring Butterfly Loach'])->contain(['Properties'])->first();
+        $s->properties = [
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '1', 'value' => 6.5, 'source' => 'demo']),
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '2', 'value' => 7.5, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '1', 'value' => 20.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '2', 'value' => 23.8, 'source' => 'demo'])
+        ];
+        $this->Species->save($s);
+
+        $s = $this->Species->find()->where(['name' => 'Purple Harlequin Rasbora'])->contain(['Properties'])->first();
+        $s->properties = [
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '1', 'value' => 6.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '2', 'value' => 7.5, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '1', 'value' => 23.3, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '2', 'value' => 27.8, 'source' => 'demo'])
+        ];
+        $this->Species->save($s);
+
+        $s = $this->Species->find()->where(['name' => 'Ram Cichlid'])->contain(['Properties'])->first();
+        $s->properties = [
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '1', 'value' => 5.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '2', 'value' => 7.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '1', 'value' => 22.2, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '2', 'value' => 26.1, 'source' => 'demo'])
+        ];
+        $this->Species->save($s);
+
+        $s = $this->Species->find()->where(['name' => 'Rosy Barb'])->contain(['Properties'])->first();
+        $s->properties = [
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '1', 'value' => 6.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_ph, 'valuetype_id' => '2', 'value' => 8.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '1', 'value' => 18.0, 'source' => 'demo']),
+            new Property(['propertytype' => $p_temp, 'valuetype_id' => '2', 'value' => 22.0, 'source' => 'demo'])
+        ];
+        $this->Species->save($s);
+
     }
 
 }

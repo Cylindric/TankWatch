@@ -8,7 +8,7 @@ use Cake\Validation\Validator;
 class PropertiesTable extends Table {
 
     public function initialize(array $config) {
-        $this->belongsTo('SpeciesProperties');
+        $this->belongsTo('Species');
         $this->belongsTo('Propertytypes');
 
         $this->addBehavior('Timestamp');

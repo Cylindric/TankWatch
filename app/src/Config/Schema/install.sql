@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS `installs`;
 DROP TABLE IF EXISTS `test_sets_tests`;
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `species_tanks`;
-DROP TABLE IF EXISTS `species_properties`;
 DROP TABLE IF EXISTS `properties`;
 DROP TABLE IF EXISTS `propertytypes`;
 DROP TABLE IF EXISTS `species`;
@@ -34,17 +33,21 @@ CREATE TABLE `propertytypes` (
 	`name` VARCHAR(64) NOT NULL,
 	`code` VARCHAR(32) NOT NULL,
 	`display_format` VARCHAR(45) NOT NULL DEFAULT '%f',
+	`unit_id` INT NOT NULL,
 	`is_test` BIT NOT NULL DEFAULT 0,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	INDEX(`unit_id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /* Creating table Properties. */;
 CREATE TABLE `properties` (
 	`id` INT NOT NULL AUTO_INCREMENT,
+	`species_id` INT NOT NULL,
 	`propertytype_id` INT NOT NULL,
 	`value` FLOAT DEFAULT NULL,
+	`valuetype_id` INT NOT NULL DEFAULT 0,
 	`source` VARCHAR(255) DEFAULT NULL,
 	`created` DATETIME DEFAULT NULL,
 	`modified` DATETIME DEFAULT NULL,
@@ -78,21 +81,6 @@ CREATE TABLE `species` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-/* Creating table Species Properties. */;
-CREATE TABLE `species_properties` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`species_id` INT NOT NULL,
-	`propertytype_id` INT NOT NULL,
-	`min_property_id` INT NOT NULL,
-	`max_property_id` INT NOT NULL,
-	`created` DATETIME DEFAULT NULL,
-	`modified` DATETIME DEFAULT NULL,
-	PRIMARY KEY (`id`),
-	INDEX (`species_id`),
-	INDEX (`propertytype_id`),
-	INDEX (`min_property_id`),
-	INDEX (`max_property_id`)
-) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /* Creating table Species Tanks. */;
 CREATE TABLE `species_tanks` (
@@ -192,17 +180,15 @@ ALTER TABLE `results`
 	ADD CONSTRAINT `fk_results_test_sets` FOREIGN KEY (`test_set_id`) REFERENCES `test_sets` (`id`) ON DELETE CASCADE
 ;
 
-/* Adding contraints to table Species Properties. */;
-ALTER TABLE `species_properties`
-	ADD CONSTRAINT `fk_species_properties_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_species_properties_propertytype` FOREIGN KEY (`propertytype_id`) REFERENCES `propertytypes` (`id`) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_species_properties_property_min` FOREIGN KEY (`min_property_id`) REFERENCES `properties` (`id`) ON DELETE CASCADE,
-	ADD CONSTRAINT `fk_species_properties_property_max` FOREIGN KEY (`max_property_id`) REFERENCES `properties` (`id`) ON DELETE CASCADE
-;
-
 /* Adding contraints to table Properties. */;
 ALTER TABLE `properties`
+	ADD CONSTRAINT `fk_properties_species` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE,
 	ADD CONSTRAINT `fk_properties_propertytype` FOREIGN KEY (`propertytype_id`) REFERENCES `propertytypes` (`id`) ON DELETE CASCADE
+;
+
+/* Adding contraints to table Property Types. */;
+ALTER TABLE `propertytypes`
+	ADD CONSTRAINT `fk_propertytypes_units` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE
 ;
 
 /* Adding contraints to table Species Tanks. */;

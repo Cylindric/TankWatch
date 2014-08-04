@@ -8,7 +8,7 @@ use Cake\Validation\Validator;
 class SpeciesTable extends Table {
 
     public function initialize(array $config) {
-        $this->hasMany('Speciesproperties');
+        $this->hasMany('Properties');
         
         $this->addBehavior('Timestamp');
     }
